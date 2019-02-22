@@ -66,9 +66,6 @@ class Bref extends ServiceProvider
      */
     public function boot(): void
     {
-        // Load our Laravel Helper functions
-        require 'helpers.php';
-
         // if we are running in lambda, lets shuffle some things around.
         if (runningInLambda()) {
             $this->setupStorage();
