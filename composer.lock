@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "86b63245dc14bacf0c69bc2d8d73ddaa",
+    "content-hash": "583be14a37e3f390699378be2017cd8a",
     "packages": [
         {
             "name": "stechstudio/aws-events",
@@ -3773,6 +3773,8 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": "^7.2"
+    },
     "platform-dev": []
 }
