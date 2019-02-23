@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use STS\Bref\Bridge\Exceptions\Package;
 use Symfony\Component\Process\Process;
 use ZipArchive;
+use function base_path;
 
 class Archive
 {
@@ -118,6 +119,11 @@ class Archive
         $vendorFileList = $package->collectComposerLibraries();
         $package->addCollection($projectFileList);
         $package->addCollection($vendorFileList);
+        $package->addFile(__DIR__ . '/../../bin/bootstrap-fpm.php', 'bootstrap');
+        $package->setPermissions(
+            'bootstrap',
+            FilePermissionCalculator::fromStringRepresentation('-r-xr-xr-x')->getDecimal()
+        );
         $package->close();
         return $package->getPath();
     }
@@ -171,7 +177,7 @@ class Archive
     protected function ignore(\SplFileInfo $fileInfo, string $path): bool
     {
         foreach (config('bref.packaging.ignore') as $pattern) {
-            if (strpos($path, $pattern) !== false) {
+            if (! empty($pattern) && strpos($path, $pattern) !== false) {
                 return true;
             }
         }
