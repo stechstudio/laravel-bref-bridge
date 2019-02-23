@@ -191,6 +191,7 @@ class Archive
             $key =>
                 collect([
                     'path' => $fileInfo->getRealPath(),
+                    'isDir' => $fileInfo->isDir(),
                     'permissions' => $this->getPermissions($fileInfo, $key),
                 ]),
         ];
@@ -242,29 +243,17 @@ class Archive
     {
         $collection->each(
             function ($data, $entryName): void {
-                if (is_file($data->get('path'))) {
-                    $this->addFile($data->get('path'), $entryName);
-                } else {
+                $entryName = 'laravel/' . $entryName;
+
+                if ($data->get('isDir', false)) {
                     $this->addEmptyDir($entryName);
+                } else {
+                    $this->addFile($data->get('path'), $entryName);
                 }
                 $this->setPermissions($entryName, $data->get('permissions'));
             }
         );
         $this->reset();
-        return $this;
-    }
-
-    /**
-     * Add a file to the archive
-     *
-     * @return $this
-     */
-    public function addFile(string $path, string $entryName): Archive
-    {
-        $res = $this->zipArchive->addFile($path, $entryName);
-        if ($res !== true) {
-            throw new Package($this->zipArchive->getStatusString(), 66);
-        }
         return $this;
     }
 
@@ -276,6 +265,20 @@ class Archive
     public function addEmptyDir(string $entryName): Archive
     {
         $res = $this->zipArchive->addEmptyDir($entryName);
+        if ($res !== true) {
+            throw new Package($this->zipArchive->getStatusString(), 66);
+        }
+        return $this;
+    }
+
+    /**
+     * Add a file to the archive
+     *
+     * @return $this
+     */
+    public function addFile(string $path, string $entryName): Archive
+    {
+        $res = $this->zipArchive->addFile($path, $entryName);
         if ($res !== true) {
             throw new Package($this->zipArchive->getStatusString(), 66);
         }
