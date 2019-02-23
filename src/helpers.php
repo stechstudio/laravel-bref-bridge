@@ -80,6 +80,7 @@ if (! function_exists('copyFolder')) {
             new RecursiveDirectoryIterator($source, RecursiveDirectoryIterator::SKIP_DOTS),
             RecursiveIteratorIterator::SELF_FIRST
         );
+        /** @var SplFileInfo $item */
         foreach ($contents as $item) {
             if ($item->isDir()) {
                 $destDir = $destination . DIRECTORY_SEPARATOR . $contents->getSubPathName();
@@ -87,7 +88,7 @@ if (! function_exists('copyFolder')) {
                     @mkdir($destDir);
                 }
             } else {
-                copy($item, $destination . DIRECTORY_SEPARATOR . $contents->getSubPathName());
+                copy($item->getRealPath(), $destination . DIRECTORY_SEPARATOR . $contents->getSubPathName());
             }
         }
         return true;
