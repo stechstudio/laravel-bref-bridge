@@ -38,7 +38,7 @@ Resources:
     Properties:
       FunctionName: 'laravel-artisan'
       CodeUri: ./storage/latest.zip
-      Handler: artisan
+      Handler: larave/artisan
       Timeout: 120
       Runtime: provided
       Layers:
