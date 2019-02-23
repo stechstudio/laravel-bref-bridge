@@ -116,7 +116,9 @@ class Archive
         $package = self::make();
         $projectFileList = $package->getFileCollection(base_path());
         $vendorFileList = $package->collectComposerLibraries();
-        $package->addCollection($projectFileList)->addCollection($vendorFileList)->close();
+        $package->addCollection($projectFileList);
+        $package->addCollection($vendorFileList);
+        $package->close();
         return $package->getPath();
     }
 
@@ -169,8 +171,7 @@ class Archive
     protected function ignore(\SplFileInfo $fileInfo, string $path): bool
     {
         foreach (config('bref.packaging.ignore') as $pattern) {
-            if (strpos($fileInfo->getPathInfo()->getPath(), $pattern) !== false ||
-                $fileInfo->getBasename() === basename($pattern)) {
+            if (strpos($path, $pattern) !== false) {
                 return true;
             }
         }
@@ -215,39 +216,26 @@ class Archive
      */
     public function collectComposerLibraries(): Collection
     {
-        $tmpDir = \tempDir('serverlessVendor', true);
+        $tmpDir = \tempDir('serverlessVendor', true)->getPathname();
+
         copy(base_path('composer.json'), sprintf('%s/composer.json', $tmpDir));
         copy(base_path('composer.lock'), sprintf('%s/composer.lock', $tmpDir));
 
-        $this->collectComposerFiles($tmpDir->getPath(), 'composer.json');
-        $this->collectComposerFiles($tmpDir->getPath(), 'composer.lock');
+        $this->collectComposerFiles($tmpDir, 'composer.json');
+        $this->collectComposerFiles($tmpDir, 'composer.lock');
         copyFolder(base_path('database/seeds'), $tmpDir . '/database/seeds');
         copyFolder(base_path('database/factories'), $tmpDir . '/database/factories');
         $process = new Process(['composer', 'install', '--no-dev', '--no-scripts']);
-        $process->setWorkingDirectory($tmpDir->getPath());
+        $process->setWorkingDirectory($tmpDir);
         $process->run();
         rmFolder($tmpDir . '/database');
 
-        return $this->getFileCollection($tmpDir->getPath());
+        return $this->getFileCollection($tmpDir);
     }
 
     protected function collectComposerFiles(string $tmpDir, string $source): void
     {
         copy(base_path($source), sprintf('%s/%s', $tmpDir, $source));
-    }
-
-    /**
-     * Close the archive and release files.
-     *
-     * @return $this
-     */
-    public function close(): Archive
-    {
-        $res = $this->zipArchive->close();
-        if ($res !== true) {
-            throw new Package($this->zipArchive->getStatusString(), 66);
-        }
-        return $this;
     }
 
     public function addCollection(Collection $collection): Archive
@@ -308,6 +296,20 @@ class Archive
     {
         $this->close();
         $this->open();
+        return $this;
+    }
+
+    /**
+     * Close the archive and release files.
+     *
+     * @return $this
+     */
+    public function close(): Archive
+    {
+        $res = $this->zipArchive->close();
+        if ($res !== true) {
+            throw new Package($this->zipArchive->getStatusString(), 66);
+        }
         return $this;
     }
 

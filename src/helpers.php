@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 if (! function_exists('runningInLambda')) {
     /**
      * Heps us check to see if we are running in a Lambda context
@@ -75,21 +76,27 @@ if (! function_exists('copyFolder')) {
         if (! is_dir($destination)) {
             mkdir($destination, 0777, true);
         }
-        /** @var  RecursiveDirectoryIterator $contents */
-        $contents = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($source, RecursiveDirectoryIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::SELF_FIRST
-        );
+        $directory = new RecursiveDirectoryIterator($source, RecursiveDirectoryIterator::SKIP_DOTS);
+
+        /** @var  RecursiveDirectoryIterator $iterator */
+        $iterator = new RecursiveIteratorIterator($directory, RecursiveIteratorIterator::SELF_FIRST);
+
         /** @var SplFileInfo $item */
-        foreach ($contents as $item) {
+        foreach ($iterator as $key => $item) {
+            if ($item->isFile() || $item->isLink()) {
+                copy($item->getRealPath(), $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+                continue;
+            }
+
             if ($item->isDir()) {
-                $destDir = $destination . DIRECTORY_SEPARATOR . $contents->getSubPathName();
+                $destDir = $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName();
                 if (! is_dir($destDir)) {
                     @mkdir($destDir);
                 }
-            } else {
-                copy($item->getRealPath(), $destination . DIRECTORY_SEPARATOR . $contents->getSubPathName());
+                continue;
             }
+
+            dd($iterator);
         }
         return true;
     }
