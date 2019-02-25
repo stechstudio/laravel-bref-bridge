@@ -7,6 +7,7 @@ use Illuminate\Routing\RouteCollection;
 use Illuminate\Support\Facades\Route;
 use STS\Bref\Bridge\Events\SamConfigurationRequested;
 use Symfony\Component\Yaml\Yaml;
+use function array_key_exists;
 
 class ConfigureSam
 {
@@ -30,7 +31,9 @@ class ConfigureSam
      */
     protected function setFunctionName(string $resource, string $functionName): void
     {
-        $this->config['Resources'][$resource]['Properties']['FunctionName'] = $functionName;
+        if (array_key_exists($resource, $this->config['Resources'])) {
+            $this->config['Resources'][$resource]['Properties']['FunctionName'] = $functionName;
+        }
     }
 
     /**
