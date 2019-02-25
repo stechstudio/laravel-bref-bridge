@@ -8,7 +8,7 @@ Globals:
       Variables:
         # Laravel environment variables
         APP_STORAGE: '/tmp'
-        BREF_LAMBDA_ENVIRONMENT: true
+        BREF_LAMBDA_ENV: true
 
 Resources:
   Website:
@@ -38,7 +38,7 @@ Resources:
     Properties:
       FunctionName: 'laravel-artisan'
       CodeUri: ./storage/latest.zip
-      Handler: laravel/artisan
+      Handler: larave/artisan
       Timeout: 120
       Runtime: provided
       Layers:
