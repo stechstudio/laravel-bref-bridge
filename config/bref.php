@@ -32,29 +32,28 @@ return [
             base_path('storage'),
             base_path('.idea'),
             base_path('.git'),
+            base_path('server.php'),
+            base_path('.env'),
+            base_path('.env.example'),
+            base_path('versions.json'),
+            base_path('.php_cs.cache'),
+            base_path('.stack.yaml'),
+            base_path('phpunit.xml'),
+            base_path('template.yaml'),
             // File Names
             '.gitignore',
-            '.env',
-            '.env.example',
             '.gitkeep',
             '.htaccess',
             'readme.md',
-            'versions.json',
-            '.php_cs.cache',
             'composer.json',
             'composer.lock',
             '.DS_Store',
             '.editorconfig',
             '.gitattributes',
-            '.stack.yaml',
             'package.json',
-            'phpunit.xml',
-            'server.php',
-            'template.yaml',
+            // Any executables should be here.
+            'executables' => [
+                'artisan',
+            ],
         ],
-        // Any executables should be here.
-        'executables' => [
-            'artisan',
-        ],
-    ],
-];
+    ];
