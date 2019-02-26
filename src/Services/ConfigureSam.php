@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use STS\Bref\Bridge\Events\SamConfigurationRequested;
 use Symfony\Component\Yaml\Yaml;
 use function array_key_exists;
+use function base_path;
 
 class ConfigureSam
 {
@@ -45,7 +46,7 @@ class ConfigureSam
     protected function setEnvironmentVariables(array $variableNames = []): void
     {
         if (empty($variables)) {
-            $dot = new Dotenv(base_path());
+            $dot = Dotenv::create(base_path());
             $dot->load();
             $variableNames = $dot->getEnvironmentVariableNames();
         }
