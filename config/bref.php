@@ -51,9 +51,10 @@ return [
             '.editorconfig',
             '.gitattributes',
             'package.json',
-            // Any executables should be here.
-            'executables' => [
-                'artisan',
-            ],
         ],
-    ];
+        // Any executables should be here.
+        'executables' => [
+            'artisan',
+        ],
+    ],
+];
