@@ -3,6 +3,8 @@
 
 use Bref\Runtime\LambdaRuntime;
 use Bref\Runtime\PhpFpm;
+use STS\AwsEvents\Events\ApiGatewayProxyRequest;
+use STS\AwsEvents\Events\Event;
 
 ini_set('display_errors', '1');
 error_reporting(E_ALL);
@@ -33,7 +35,12 @@ $phpFpm->start();
 
 while (true) {
     $lambdaRuntime->processNextEvent(function ($event) use ($phpFpm): array {
-        return $phpFpm->proxy($event)->toApiGatewayFormat();
+        $event = Event::fromString($event);
+        if (ApiGatewayProxyRequest::supports($event)) {
+            return $phpFpm->proxy($event)->toApiGatewayFormat();
+        }
+
+
     });
 
     try {
