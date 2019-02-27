@@ -72,6 +72,7 @@ return [
             'BREF_LAMBDA_ENV',  // True
             'LOG_CHANNEL',      // stderr (ensures everything logs into cloudwatch)
             'CACHE_DRIVER',     // file (because, what else really makes sense?
+            'SESSION_DRIVER',   // Array
         ],
     ],
 ];
