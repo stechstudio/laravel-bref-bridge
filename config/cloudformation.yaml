@@ -7,8 +7,10 @@ Globals:
     Environment:
       Variables:
         # Laravel environment variables
-        APP_STORAGE: '/tmp'
-        BREF_LAMBDA_ENV: true
+        APP_STORAGE: '/tmp'     # The only thing we can write to in Lambda
+        BREF_LAMBDA_ENV: true   # Make it easy to determine we are running in Lambda. Use `runningInLambda()` helper.
+        LOG_CHANNEL: stderr     # Log to stderr so that everything goes to cloudwatch.
+        CACHE_DRIVER: file
 
 Resources:
   Website:

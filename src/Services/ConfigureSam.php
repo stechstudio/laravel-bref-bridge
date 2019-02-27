@@ -9,6 +9,7 @@ use STS\Bref\Bridge\Events\SamConfigurationRequested;
 use Symfony\Component\Yaml\Yaml;
 use function array_key_exists;
 use function base_path;
+use function in_array;
 
 class ConfigureSam
 {
@@ -52,6 +53,11 @@ class ConfigureSam
         }
 
         foreach ($variableNames as $variableName) {
+            // These are hard coded, global settings. Ignore them in the .env file.
+            // You can always ecit template.yml yourself if you want to modify them.
+            if (in_array($variableName, config('bref.env.ignore'))) {
+                continue;
+            }
             $this->config['Globals']['Function']['Environment']['Variables'][$variableName] = (string) env(
                 $variableName,
                 ''

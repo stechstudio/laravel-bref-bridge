@@ -57,4 +57,21 @@ return [
             'artisan',
         ],
     ],
+    /*
+    |--------------------------------------------------------------------------
+    | Ignored .env Variables
+    |--------------------------------------------------------------------------
+    |
+    | This value is the name of your Lambda. This value is used when the
+    | framework needs to generate the lambda function names.
+    |
+    */
+    'env' => [
+        'ignore' => [
+            'APP_STORAGE',      // Hardcoded to 'tmp'
+            'BREF_LAMBDA_ENV',  // True
+            'LOG_CHANNEL',      // stderr (ensures everything logs into cloudwatch)
+            'CACHE_DRIVER',     // file (because, what else really makes sense?
+        ],
+    ],
 ];
