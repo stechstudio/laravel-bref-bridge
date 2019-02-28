@@ -35,12 +35,10 @@ $phpFpm->start();
 
 while (true) {
     $lambdaRuntime->processNextEvent(function ($event) use ($phpFpm): array {
-        $event = Event::fromString($event);
+        $event = Event::fromString(json_encode($event));
         if (ApiGatewayProxyRequest::supports($event)) {
             return $phpFpm->proxy($event)->toApiGatewayFormat();
         }
-
-
     });
 
     try {

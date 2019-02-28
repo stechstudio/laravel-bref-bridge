@@ -1,4 +1,4 @@
-#!/opt/php/bin/php
+#!/opt/bin/php
 <?php declare(strict_types=1);
 
 use Bref\Runtime\PhpFpm;
