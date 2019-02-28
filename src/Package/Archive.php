@@ -119,7 +119,7 @@ class Archive
         $vendorFileList = $package->collectComposerLibraries();
         $package->addCollection($projectFileList);
         $package->addCollection($vendorFileList);
-        $package->addFile(__DIR__ . '/../../bin/bootstrap-fpm.php', 'bootstrap');
+        $package->addFile(__DIR__ . '/../../bin/bootstrap-bubba.php', 'bootstrap');
         $package->setPermissions(
             'bootstrap',
             FilePermissionCalculator::fromStringRepresentation('-r-xr-xr-x')->getDecimal()
