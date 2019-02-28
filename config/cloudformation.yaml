@@ -18,13 +18,13 @@ Resources:
   Website:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: 'laravel-website'
+      FunctionName: 'laravel'
       CodeUri: ./storage/latest.zip
       Handler: laravel/public/index.php
       Timeout: 30 # in seconds (API Gateway has a timeout of 30 seconds)
       Runtime: provided
       Layers:
-        - 'arn:aws:lambda:us-east-1:209497400698:layer:php-73-fpm:1'
+        - 'arn:aws:lambda:us-east-1:209497400698:layer:php-73-fpm:2'
       Events:
         # The function will match all HTTP URLs
         HttpRoot:
@@ -37,17 +37,6 @@ Resources:
           Properties:
             Path: /{proxy+}
             Method: ANY
-  Artisan:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: 'laravel-artisan'
-      CodeUri: ./storage/latest.zip
-      Handler: laravel/artisan
-      Timeout: 120
-      Runtime: provided
-      Layers:
-        - 'arn:aws:lambda:us-east-1:209497400698:layer:php-72:1'
-
 
 Outputs:
   DemoHttpApi:
