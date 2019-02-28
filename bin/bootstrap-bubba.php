@@ -123,7 +123,7 @@ function runtimeIniSettings(): void
      * We ensure that All errors and warnings will be reported, and
      * thus logged in the Cloudwatch Logs.
      */
-    ini_set('error_reporting', E_ALL);
+    ini_set('error_reporting', (string) E_ALL);
 }
 
 /**
