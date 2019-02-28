@@ -113,8 +113,8 @@ class LambdaRunner extends Thread
     /**
      * Ensure we are joined, and then return the result.
      **/
-    public function __toString(): string
+    public function __toString(): array
     {
-        return print_r($this->store->getResult(), true);
+        return $this->store->getResult();
     }
 }

@@ -15,18 +15,12 @@ class LambdaResult extends Threaded
     /** @var array */
     protected $result;
 
-    /**
-     * @return array
-     */
     public function getResult(): array
     {
         return $this->result;
     }
 
-    /**
-     * @param array $result
-     */
-    public function setResult(array $result): void
+    public function setResult(array $result): array
     {
         $this->result = $result;
     }

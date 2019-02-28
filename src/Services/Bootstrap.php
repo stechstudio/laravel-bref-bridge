@@ -268,7 +268,7 @@ class Bootstrap
             curl_exec($this->error);
             throw new \RuntimeException('Failed to execute the Lambda Function.');
         }
-        $this->reportResult($store->getResult()[0]);
+        $this->reportResult($store->getResult());
     }
 
     /**
@@ -331,7 +331,7 @@ class Bootstrap
             return $headerLength;
         }
         [$name, $value] = preg_split('/:\s*/', $header, 2);
-        $this->context[trim($name)] = trim($value);
+        $this->context[strtolower(trim($name))] = trim($value);
         if (strtolower($name) === 'lambda-runtime-aws-request-id') {
             $this->requestId = trim($value);
         }

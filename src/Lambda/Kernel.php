@@ -32,6 +32,9 @@ class Kernel implements KernelContract
     /** @var Lambda */
     protected $lambda;
 
+    /** @var array */
+    protected $output;
+
     /**
      * Create a new Lambda kernel instance.
      */
@@ -45,12 +48,13 @@ class Kernel implements KernelContract
     {
         try {
             $this->bootstrap();
-            return $this->getLambda()->run($event, $context);
+            $this->output = $this->getLambda()->run($event, $context);
         } catch (Throwable $e) {
             $e = new FatalThrowableError($e);
             $this->reportException($e);
             return $this->renderException($e);
         }
+        return $this->output;
     }
 
     /**
@@ -95,7 +99,7 @@ class Kernel implements KernelContract
 
     public function output(): array
     {
-        // TODO: Implement output() method.
+        return $this->output;
     }
 
     /**

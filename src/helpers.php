@@ -120,7 +120,7 @@ if (! function_exists('exceptionToArray')) {
 }
 
 if (! function_exists('lambda')) {
-    function lambda(string $event, string $context): array
+    function lambda(string $event, string $context): string
     {
         $app = require_once __DIR__ . '/bootstrap/app.php';
 
@@ -135,12 +135,10 @@ if (! function_exists('lambda')) {
         |
         */
 
+        /** @var \STS\Bref\Bridge\Lambda\Kernel $kernel */
         $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 
-        $results = $kernel->handle(
-            $input = new Symfony\Component\Console\Input\ArgvInput,
-            new Symfony\Component\Console\Output\ConsoleOutput
-        );
+        $results = $kernel->handle($event, $context);
 
         /*
         |--------------------------------------------------------------------------
