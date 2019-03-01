@@ -11,7 +11,7 @@ namespace STS\Bref\Bridge\Services;
 use Bref\Runtime\PhpFpm;
 use STS\AwsEvents\Events\ApiGatewayProxyRequest;
 use STS\AwsEvents\Events\Event;
-use STS\Bref\Bridge\Models\LambdaResult;
+use Threaded;
 use const PTHREADS_INHERIT_NONE;
 
 class Bootstrap
@@ -231,9 +231,10 @@ class Bootstrap
         }
 
         try {
-            $store = new LambdaResult;
+            $store = new Threaded;
             $thread = new LambdaRunner($store, $this->requestBody, json_encode($this->context));
             $thread->start(PTHREADS_INHERIT_NONE) && $thread->join();
+            $this->reportResult($store[0]);
         } catch (\Throwable $e) {
             self::consoleLog('ERROR: ' . $e->getMessage());
             $response = [
@@ -251,7 +252,6 @@ class Bootstrap
             curl_exec($this->error);
             throw new \RuntimeException('Failed to execute the Lambda Function.');
         }
-        $this->reportResult($store->getResult());
     }
 
     /**

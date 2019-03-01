@@ -20,7 +20,7 @@ class LambdaResult extends Threaded
         return $this->result;
     }
 
-    public function setResult(array $result): array
+    public function setResult(array $result): void
     {
         $this->result = $result;
     }

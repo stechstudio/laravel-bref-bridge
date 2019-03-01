@@ -10,7 +10,6 @@ namespace STS\Bref\Bridge\Lambda;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Collection;
-use RuntimeException;
 use STS\AwsEvents\Contexts\Context;
 use STS\AwsEvents\Events\ApiGatewayProxyRequest;
 use STS\AwsEvents\Events\CloudformationCreateRequest;
@@ -132,11 +131,10 @@ class Router implements Registrar
 
     public function registerFromFile(string $routes): void
     {
-        if (! file_exists($routes)) {
-            throw new RuntimeException("$routes does not exist. Please create it.");
+        if (file_exists($routes)) {
+            $router = $this;
+            require_once $routes;
         }
-        $router = $this;
-        require_once $routes;
     }
 
     /**

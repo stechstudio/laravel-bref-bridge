@@ -10,10 +10,8 @@ namespace STS\Bref\Bridge\Services;
 
 use STS\Bref\Bridge\Lambda\Contracts\Application as LambdaContract;
 use STS\Bref\Bridge\Lambda\Kernel;
-use STS\Bref\Bridge\Models\LambdaResult;
 use Thread;
 use Threaded;
-use function json_encode;
 
 class LambdaRunner extends Thread
 {
@@ -26,7 +24,7 @@ class LambdaRunner extends Thread
     /**
      * Results from the function
      *
-     * @var LambdaResult
+     * @var Threaded
      */
     private $store;
     /**
@@ -43,7 +41,7 @@ class LambdaRunner extends Thread
      *
      * @param mixed ...$params
      */
-    public function __construct(LambdaResult $store, ...$params)
+    public function __construct(Threaded $store, ...$params)
     {
         $this->params = $params;
         $this->store = $store;
@@ -55,21 +53,12 @@ class LambdaRunner extends Thread
      *
      * @param mixed ...$params
      */
-    public static function call(LambdaResult $store, ...$params): LambdaRunner
+    public static function call(Threaded $store, ...$params): LambdaRunner
     {
         $thread = new LambdaRunner($store, ...$params);
         if ($thread->start()) {
             return $thread;
         }
-    }
-
-    /**
-     * Fetch the results.
-     */
-    public function getStore(): Threaded
-    {
-        $this->join();
-        return $this->store;
     }
 
     /**
@@ -103,7 +92,7 @@ class LambdaRunner extends Thread
          * See this StackOverflow post for additional information:
          * https://stackoverflow.com/a/44852650/4530326
          */
-        $this->store->setResult($this->lambda(...$this->params));
+        $this->store[0] = (array) $this->lambda(...$this->params);
     }
 
     protected function lambda(string $event, string $context): array
@@ -161,13 +150,5 @@ class LambdaRunner extends Thread
         $kernel->terminate(0);
 
         return $results;
-    }
-
-    /**
-     * Ensure we are joined, and then return the result.
-     **/
-    public function __toString(): string
-    {
-        return json_encode($this->store->getResult());
     }
 }

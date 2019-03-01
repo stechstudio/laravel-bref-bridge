@@ -197,6 +197,6 @@ class Bref extends ServiceProvider
 
         $this->mergeConfigFrom($this->configPath, 'bref');
         $this->commands($this->commandList);
-        LambdaRoute::registerFromFile(base_path('routes/lambda.php'));
+        \LambdaRoute::registerFromFile(base_path('routes/lambda.php'));
     }
 }
