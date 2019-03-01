@@ -158,6 +158,7 @@ function initializePhpFpm(Bootstrap $bootstrap): void
     try {
         $indexPhp = sprintf('%s/%s', getenv('LAMBDA_TASK_ROOT'), '/laravel/public/index.php');
         $bootstrap->setPhpFpm(new PhpFpm($indexPhp));
+        $bootstrap->startPhpFpm();
     } catch (Throwable $t) {
         initializationError(
             "Could not initialize PHP FPM. {$t->getMessage()}",

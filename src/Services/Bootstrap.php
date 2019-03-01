@@ -121,6 +121,11 @@ class Bootstrap
         $this->phpFpm = $phpFpm;
     }
 
+    public function startPhpFpm(): void
+    {
+        $this->phpFpm->start();
+    }
+
     public function getVendorAutoload(): string
     {
         return $this->vendorAutoload;
@@ -218,6 +223,7 @@ class Bootstrap
     {
         $event = Event::fromString($this->requestBody);
         if (ApiGatewayProxyRequest::supports($event)) {
+            $this->phpFpm->ensureStillRunning();
             $this->reportResult($this->phpFpm->proxy($event->toArray())->toApiGatewayFormat());
             return;
         }
