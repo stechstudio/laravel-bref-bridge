@@ -24,8 +24,8 @@ while (true) {
     try {
         $bootstrap->handleInvocation();
     } catch (Throwable $t) {
-        CLIBootstrap::consoleLog($t->getMessage());
-        CLIBootstrap::consoleLog($t->getTraceAsString());
+        print $t->getMessage();
+        print $t->getTraceAsString();
         exit(1);
     }
 }
