@@ -46,7 +46,10 @@
     "laravel": {
       "providers": [
         "STS\\Bref\\Bridge\\Providers\\Bref"
-      ]
+      ],
+      "aliases": {
+        "LambdaRoute": "STS\\Bref\\Bridge\\Lambda\\Facades\\LambdaRoute"
+      }
     }
   },
   "repositories": [

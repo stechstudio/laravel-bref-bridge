@@ -10,6 +10,7 @@ namespace STS\Bref\Bridge\Lambda;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Collection;
+use RuntimeException;
 use STS\AwsEvents\Contexts\Context;
 use STS\AwsEvents\Events\ApiGatewayProxyRequest;
 use STS\AwsEvents\Events\CloudformationCreateRequest;
@@ -32,6 +33,7 @@ use STS\AwsEvents\Events\Sqs;
 use STS\Bref\Bridge\Exceptions\InvalidEventController;
 use STS\Bref\Bridge\Lambda\Contracts\Registrar;
 use function call_user_func;
+use function file_exists;
 use function get_class;
 
 class Router implements Registrar
@@ -126,6 +128,15 @@ class Router implements Registrar
     public function forget(string $eventName): Registrar
     {
         $this->routes->forget($eventName);
+    }
+
+    public function registerFromFile(string $routes): void
+    {
+        if (! file_exists($routes)) {
+            throw new RuntimeException("$routes does not exist. Please create it.");
+        }
+        $router = $this;
+        require_once $routes;
     }
 
     /**
