@@ -9,8 +9,7 @@ class UpdateFunction
 {
     public function handle(UpdateRequested $event): void
     {
-        $this->runUpdate(config('bref.website_name'));
-        $this->runUpdate(config('bref.artisan_name'));
+        $this->runUpdate(config('bref.name'));
     }
 
     protected function runUpdate(string $functionName): void

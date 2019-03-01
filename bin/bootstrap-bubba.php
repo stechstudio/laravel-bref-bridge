@@ -166,21 +166,3 @@ function initializePhpFpm(Bootstrap $bootstrap): void
         );
     }
 }
-
-/**
- * Set the lambda Function, or die trying.
- */
-function setLambdaFunction(Bootstrap $bootstrap, string $function): void
-{
-    /**
-     * Set the Lambda Function
-     */
-    try {
-        $bootstrap->setLambdaFunction($function);
-    } catch (Throwable $t) {
-        initializationError(
-            "Failed to set the Lambda Function. {$t->getMessage()}",
-            'InvalidFunctionException'
-        );
-    }
-}
