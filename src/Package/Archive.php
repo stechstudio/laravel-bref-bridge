@@ -9,6 +9,11 @@ use STS\Bref\Bridge\Exceptions\Package;
 use Symfony\Component\Process\Process;
 use ZipArchive;
 use function base_path;
+use function copy;
+use function copyFolder;
+use function rmFolder;
+use function str_replace;
+use function strpos;
 
 class Archive
 {
@@ -115,9 +120,7 @@ class Archive
     public static function laravel()
     {
         $package = self::make();
-        $projectFileList = $package->getFileCollection(base_path());
         $vendorFileList = $package->collectComposerLibraries();
-        $package->addCollection($projectFileList);
         $package->addCollection($vendorFileList);
         $package->addFile(__DIR__ . '/../../bin/bootstrap-bubba.php', 'bootstrap');
         $package->setPermissions(
@@ -152,6 +155,36 @@ class Archive
     }
 
     /**
+     * We create a temporary directory to deploy composer vendor libraries too w/out and development libraries
+     * We will deploy that.
+     */
+    public function collectComposerLibraries(): Collection
+    {
+        $tmpDir = \tempDir('serverlessVendor', true)->getPathname();
+        copyFolder(base_path(), $tmpDir);
+        rmFolder($tmpDir . '/vendor');
+        $this->collectComposerFiles($tmpDir, 'composer.json');
+        $this->collectComposerFiles($tmpDir, 'composer.lock');
+        copyFolder(base_path('database/seeds'), $tmpDir . '/database/seeds');
+        copyFolder(base_path('database/factories'), $tmpDir . '/database/factories');
+        $process = new Process(['composer', 'install', '--no-dev']);
+        $process->setWorkingDirectory($tmpDir);
+        $process->run();
+        $process = new Process(['composer', 'dump-autoload']);
+        $process->setWorkingDirectory($tmpDir);
+        $process->run();
+
+        rmFolder($tmpDir . '/database');
+
+        return $this->getFileCollection($tmpDir);
+    }
+
+    protected function collectComposerFiles(string $tmpDir, string $source): void
+    {
+        copy(base_path($source), sprintf('%s/%s', $tmpDir, $source));
+    }
+
+    /**
      * Works from a base directory and add all files that are not blacklisted.
      */
     public function getFileCollection(string $basePath): Collection
@@ -161,8 +194,8 @@ class Archive
             \RecursiveIteratorIterator::CHILD_FIRST
         );
         return collect(iterator_to_array($fileList))->reject(
-            function (\SplFileInfo $fileInfo, string $path) {
-                return $this->ignore($fileInfo, $path);
+            function (\SplFileInfo $fileInfo, string $path) use ($basePath) {
+                return $this->ignore($fileInfo, $path, $basePath);
             }
         )->mapWithKeys(
             function (\SplFileInfo $fileInfo, string $path) use ($basePath) {
@@ -174,9 +207,13 @@ class Archive
     /**
      * Determines whether to ignore the file or path
      */
-    protected function ignore(\SplFileInfo $fileInfo, string $path): bool
+    protected function ignore(\SplFileInfo $fileInfo, string $path, string $basePath): bool
     {
         foreach (config('bref.packaging.ignore') as $pattern) {
+            if (strpos($pattern, base_path()) !== false) {
+                $pattern = str_replace(base_path(), $basePath, $pattern);
+            }
+
             if (! empty($pattern) && strpos($path, $pattern) !== false) {
                 return true;
             }
@@ -215,34 +252,6 @@ class Archive
             $perms = FilePermissionCalculator::fromStringRepresentation('-r-xr-xr-x')->getDecimal();
         }
         return $perms;
-    }
-
-    /**
-     * We create a temporary directory to deploy composer vendor libraries too w/out and development libraries
-     * We will deploy that.
-     */
-    public function collectComposerLibraries(): Collection
-    {
-        $tmpDir = \tempDir('serverlessVendor', true)->getPathname();
-
-        copy(base_path('composer.json'), sprintf('%s/composer.json', $tmpDir));
-        copy(base_path('composer.lock'), sprintf('%s/composer.lock', $tmpDir));
-
-        $this->collectComposerFiles($tmpDir, 'composer.json');
-        $this->collectComposerFiles($tmpDir, 'composer.lock');
-        copyFolder(base_path('database/seeds'), $tmpDir . '/database/seeds');
-        copyFolder(base_path('database/factories'), $tmpDir . '/database/factories');
-        $process = new Process(['composer', 'install', '--no-dev', '--no-scripts']);
-        $process->setWorkingDirectory($tmpDir);
-        $process->run();
-        rmFolder($tmpDir . '/database');
-
-        return $this->getFileCollection($tmpDir);
-    }
-
-    protected function collectComposerFiles(string $tmpDir, string $source): void
-    {
-        copy(base_path($source), sprintf('%s/%s', $tmpDir, $source));
     }
 
     public function addCollection(Collection $collection): Archive

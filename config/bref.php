@@ -24,7 +24,6 @@ return [
     'packaging' => [
         'ignore' => [
             // Directories & Fully Qualified Paths
-            base_path('vendor'),
             base_path('tests'),
             base_path('storage'),
             base_path('.idea'),

@@ -23,7 +23,7 @@
     "symfony/yaml": "^4.2",
     "mnapoli/bref": "^0.3.4",
     "psr/http-server-handler": "^1.0",
-    "stechstudio/aws-events": "1.0.0-alpha.3",
+    "stechstudio/aws-events": "dev-master",
     "symfony/psr-http-message-bridge": "^1.1",
     "gisostallenberg/file-permission-calculator": "^1.0"
   },
@@ -48,5 +48,14 @@
         "STS\\Bref\\Bridge\\Providers\\Bref"
       ]
     }
-  }
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "/Users/bubba/develop/stechstudio/aws-events",
+      "options": {
+        "symlink": false
+      }
+    }
+  ]
 }

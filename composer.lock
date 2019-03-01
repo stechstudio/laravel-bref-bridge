@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ef1c0b485fde80ee6c495aa9166bca5e",
+    "content-hash": "d8fbd69ea186a76a974907c680c4bb8e",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1124,17 +1124,12 @@
         },
         {
             "name": "stechstudio/aws-events",
-            "version": "1.0.0-alpha.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/stechstudio/aws-events.git",
-                "reference": "cda8c78813ca2d69b0e53e4ba92f316bdf1a7a09"
-            },
+            "version": "dev-master",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/stechstudio/aws-events/zipball/cda8c78813ca2d69b0e53e4ba92f316bdf1a7a09",
-                "reference": "cda8c78813ca2d69b0e53e4ba92f316bdf1a7a09",
-                "shasum": ""
+                "type": "path",
+                "url": "/Users/bubba/develop/stechstudio/aws-events",
+                "reference": "98400726b0a8c17e8695b6cd6440ac5643f3a522",
+                "shasum": null
             },
             "require": {
                 "ext-json": "*",
@@ -1163,7 +1158,6 @@
                 },
                 "files": []
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1174,7 +1168,9 @@
                 }
             ],
             "description": "Event Handling for AWS Lambda",
-            "time": "2019-02-28T20:05:07+00:00"
+            "transport-options": {
+                "symlink": false
+            }
         },
         {
             "name": "symfony/console",
@@ -4337,7 +4333,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "stechstudio/aws-events": 15
+        "stechstudio/aws-events": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

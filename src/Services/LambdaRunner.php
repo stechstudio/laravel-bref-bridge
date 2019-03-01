@@ -8,6 +8,8 @@
 
 namespace STS\Bref\Bridge\Services;
 
+use STS\Bref\Bridge\Lambda\Contracts\Application as LambdaContract;
+use STS\Bref\Bridge\Lambda\Kernel;
 use STS\Bref\Bridge\Models\LambdaResult;
 use Thread;
 use Threaded;
@@ -15,12 +17,6 @@ use function json_encode;
 
 class LambdaRunner extends Thread
 {
-    /**
-     * The function to call
-     *
-     * @var callable
-     */
-    private $method;
     /**
      * Any parameters for the object
      *
@@ -47,9 +43,8 @@ class LambdaRunner extends Thread
      *
      * @param mixed ...$params
      */
-    public function __construct(LambdaResult $store, callable $method, ...$params)
+    public function __construct(LambdaResult $store, ...$params)
     {
-        $this->method = $method;
         $this->params = $params;
         $this->store = $store;
         $this->joined = false;
@@ -60,9 +55,9 @@ class LambdaRunner extends Thread
      *
      * @param mixed ...$params
      */
-    public static function call(LambdaResult $store, callable $method, ...$params): LambdaRunner
+    public static function call(LambdaResult $store, ...$params): LambdaRunner
     {
-        $thread = new LambdaRunner($store, $method, ...$params);
+        $thread = new LambdaRunner($store, ...$params);
         if ($thread->start()) {
             return $thread;
         }
@@ -108,7 +103,64 @@ class LambdaRunner extends Thread
          * See this StackOverflow post for additional information:
          * https://stackoverflow.com/a/44852650/4530326
          */
-        $this->store->setResult((array) ($this->method)(...$this->params));
+        $this->store->setResult($this->lambda(...$this->params));
+    }
+
+    protected function lambda(string $event, string $context): array
+    {
+        define('LARAVEL_START', microtime(true));
+
+        /*
+        |--------------------------------------------------------------------------
+        | Register The Auto Loader
+        |--------------------------------------------------------------------------
+        |
+        | Composer provides a convenient, automatically generated class loader
+        | for our application. We just need to utilize it! We'll require it
+        | into the script here so that we do not have to worry about the
+        | loading of any our classes "manually". Feels great to relax.
+        |
+        */
+
+        require __DIR__ . '/../../../../../vendor/autoload.php';
+
+        $app = require_once __DIR__ . '/../../../../../bootstrap/app.php';
+
+        /*
+        |--------------------------------------------------------------------------
+        | Run The Artisan Application
+        |--------------------------------------------------------------------------
+        |
+        | When we run the console application, the current CLI command will be
+        | executed in this console and the response sent back to a terminal
+        | or another output device for the developers. Here goes nothing!
+        |
+        */
+
+        $app->singleton(
+            LambdaContract::class,
+            Kernel::class
+        );
+
+        /** @var Kernel $kernel */
+        $kernel = $app->make(LambdaContract::class);
+
+        $results = $kernel->handle($event, $context);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Shutdown The Application
+        |--------------------------------------------------------------------------
+        |
+        | Once Artisan has finished running, we will fire off the shutdown events
+        | so that any final work may be done by the application before we shut
+        | down the process. This is the last thing to happen to the request.
+        |
+        */
+
+        $kernel->terminate(0);
+
+        return $results;
     }
 
     /**

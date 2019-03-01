@@ -9,11 +9,13 @@
 namespace STS\Bref\Bridge\Lambda;
 
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Support\Facades\Log;
 use STS\AwsEvents\Contexts\Context;
 use STS\AwsEvents\Events\Event;
 use STS\Bref\Bridge\Events\LambdaStarting;
 use STS\Bref\Bridge\Lambda\Contracts\Application as ApplicationContract;
 use STS\Bref\Bridge\Lambda\Contracts\Registrar;
+use function exceptionToArray;
 
 class Application implements ApplicationContract
 {
@@ -43,9 +45,18 @@ class Application implements ApplicationContract
 
     public function run(string $event, string $context): array
     {
-        $this->currentEvent = Event::fromString($event);
+        try {
+            $this->currentEvent = Event::fromString($event);
+        } catch (\Throwable $t) {
+            Log::error('Failed to convert event string to an event object.');
+            Log:
+            debug(exceptionToArray($t));
+            throw $t;
+        }
         $this->currentContext = Context::fromJson($context);
         $this->output = $this->router->dispatch($this->currentEvent, $this->currentContext);
+
+
         return $this->output();
     }
 }

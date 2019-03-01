@@ -12,6 +12,7 @@ use Bref\Runtime\PhpFpm;
 use STS\AwsEvents\Events\ApiGatewayProxyRequest;
 use STS\AwsEvents\Events\Event;
 use STS\Bref\Bridge\Models\LambdaResult;
+use const PTHREADS_INHERIT_NONE;
 
 class Bootstrap
 {
@@ -222,6 +223,7 @@ class Bootstrap
     public function executeLambda(): void
     {
         $event = Event::fromString($this->requestBody);
+
         if (ApiGatewayProxyRequest::supports($event)) {
             $this->phpFpm->ensureStillRunning();
             $this->reportResult($this->phpFpm->proxy($event->toArray())->toApiGatewayFormat());
@@ -230,8 +232,8 @@ class Bootstrap
 
         try {
             $store = new LambdaResult;
-            $thread = new LambdaRunner($store, 'lambda', $this->requestBody, json_encode($this->context));
-            $thread->start() && $thread->join();
+            $thread = new LambdaRunner($store, $this->requestBody, json_encode($this->context));
+            $thread->start(PTHREADS_INHERIT_NONE) && $thread->join();
         } catch (\Throwable $e) {
             self::consoleLog('ERROR: ' . $e->getMessage());
             $response = [

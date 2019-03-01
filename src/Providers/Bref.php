@@ -14,6 +14,8 @@ use STS\Bref\Bridge\Events\DeploymentRequested;
 use STS\Bref\Bridge\Events\LambdaPackageRequested;
 use STS\Bref\Bridge\Events\SamConfigurationRequested;
 use STS\Bref\Bridge\Events\UpdateRequested;
+use STS\Bref\Bridge\Lambda\Contracts\Registrar;
+use STS\Bref\Bridge\Lambda\Router;
 use STS\Bref\Bridge\Services\ConfigureSam;
 use STS\Bref\Bridge\Services\DeployFunction;
 use STS\Bref\Bridge\Services\PackageFunction;
@@ -167,6 +169,10 @@ class Bref extends ServiceProvider
         if (is_a($this->app, 'Laravel\Lumen\Application')) {
             $this->app->configure('bref');
         }
+        $this->app->singleton(
+            Registrar::class,
+            Router::class
+        );
         $this->mergeConfigFrom($this->configPath, 'bref');
         $this->commands($this->commandList);
     }

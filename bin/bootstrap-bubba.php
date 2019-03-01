@@ -1,4 +1,4 @@
-#!/opt/bin/php
+#!/opt/bin/php -dextension=pthreads.so
 <?php declare(strict_types=1);
 
 use Bref\Runtime\PhpFpm;
