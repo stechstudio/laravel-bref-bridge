@@ -14,7 +14,7 @@ use STS\Bref\Bridge\Services\Bootstrap;
 */
 
 runtimeIniSettings();
-handleVendorAutoload('/laravel/vendor/autoload.php');
+handleVendorAutoload();
 
 /** @var Bootstrap $bootstrap */
 $bootstrap = getBootstrap();
@@ -90,12 +90,15 @@ function initializationError(string $errorMessage, string $errorType): void
 /**
  * We will require the vendor autoload ... or die trying.
  */
-function handleVendorAutoload(string $path): void
+function handleVendorAutoload(): void
 {
+    $taskRoot = getenv('LAMBDA_TASK_ROOT') ?: realpath(__DIR__ . '/..');
+    $path = is_file("$taskRoot/laravel/vendor/autoload.php") ? '/laravel/vendor/autoload.php' : '/vendor/autoload.php';
+
     /**
      * Handle composers vendor autoloading.
      */
-    $vendorAutoLoad = sprintf('%s/%s', getenv('LAMBDA_TASK_ROOT'), $path);
+    $vendorAutoLoad = sprintf('%s/%s', $taskRoot, $path);
 
     if (! is_file($vendorAutoLoad)) {
         initializationError(

@@ -14,7 +14,7 @@ interface Application
     /**
      * Run a lambda command.
      */
-    public function run(): array;
+    public function run(string $event, string $context): array;
 
     /**
      * Get the output from the last event.

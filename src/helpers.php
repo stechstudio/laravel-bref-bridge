@@ -120,7 +120,7 @@ if (! function_exists('exceptionToArray')) {
 }
 
 if (! function_exists('lambda')) {
-    function lambda(string $event, string $context): string
+    function lambda(string $event, string $context): array
     {
         $app = require_once __DIR__ . '/bootstrap/app.php';
 
@@ -151,7 +151,7 @@ if (! function_exists('lambda')) {
         |
         */
 
-        $kernel->terminate($input, $status);
+        $kernel->terminate(0);
 
         return $results;
     }

@@ -8,6 +8,7 @@
 
 namespace STS\Bref\Bridge\Lambda;
 
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Collection;
 use STS\AwsEvents\Contexts\Context;
 use STS\AwsEvents\Events\ApiGatewayProxyRequest;
@@ -150,7 +151,7 @@ class Router implements Registrar
                 $this->register($eventName, [new $controller, 'handle']);
                 continue;
             }
-            throw new InvalidEventController(printf('[%s] -> [%s] is invalid.', $eventName, $controller));
+            throw new InvalidEventController(sprintf('[%s] -> [%s] is invalid.', $eventName, $controller));
         }
         return $this;
     }

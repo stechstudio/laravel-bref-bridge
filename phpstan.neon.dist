@@ -16,4 +16,6 @@ parameters:
     # Ignore Laravel Magic Call
     - '#Call to.*Illuminate.*#'
     - '#Call to.*Laravel.*#'
+    - '#Cannot access offset .STS..Bref..Bridge…. on Illuminate.Contracts.Foundation.Application.#'
+    - '#Cannot access offset .Illuminate…. on Illuminate.Contracts.Foundation.Application.#'
     # Ignore other PHP Dark Magic

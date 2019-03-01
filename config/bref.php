@@ -12,9 +12,6 @@ return [
     */
     'name' => env('BREF_NAME', env('APP_NAME')),
 
-    'website_name' => env('BREF_NAME', env('APP_NAME')) . '-website-' . env('APP_ENV'),
-    'artisan_name' => env('BREF_NAME', env('APP_NAME')) . '-artisan-' . env('APP_ENV'),
-
     /*
     |--------------------------------------------------------------------------
     |Packaging

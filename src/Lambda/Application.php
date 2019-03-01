@@ -20,10 +20,12 @@ class Application implements ApplicationContract
 
     /** @var array */
     protected $output = [];
-
+    /** @var Event */
+    protected $currentEvent;
+    /** @var Context */
+    protected $currentContext;
     /** @var Dispatcher */
     private $events;
-
     /** @var Registrar */
     private $router;
 
@@ -38,7 +40,6 @@ class Application implements ApplicationContract
     {
         return $this->output;
     }
-
 
     public function run(string $event, string $context): array
     {

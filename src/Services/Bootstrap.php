@@ -16,18 +16,6 @@ use STS\Bref\Bridge\Models\LambdaResult;
 class Bootstrap
 {
     /**
-     * The path to the user file entrypoint.
-     *
-     * @var string
-     */
-    public $taskPath;
-    /**
-     * The name of the Lambda function itself.
-     *
-     * @var string
-     */
-    private $lambdaFunction;
-    /**
      * AWS Runtime Version we are using.
      *
      * @var string
@@ -81,11 +69,8 @@ class Bootstrap
     public function __construct()
     {
         self::consoleLog('Cold Start');
-        $handlerArgs = explode('.', getenv('_HANDLER'));
-        $this->taskPath = sprintf('%s/%s.php', getenv('LAMBDA_TASK_ROOT'), $handlerArgs[0]);
         $this->vendorAutoload = sprintf('%s/%s', getenv('LAMBDA_TASK_ROOT'), '/laravel/vendor/autoload.php');
         $this->rumtimeAPI = (string) getenv('AWS_LAMBDA_RUNTIME_API');
-        $this->lambdaFunction = $handlerArgs[1];
         $this->initInvocationFetcher();
         $this->initInvocationError();
 
@@ -124,16 +109,6 @@ class Bootstrap
         $this->error = curl_init();
         curl_setopt($this->error, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($this->error, CURLOPT_RETURNTRANSFER, true);
-    }
-
-    public function getLambdaFunction(): string
-    {
-        return $this->lambdaFunction;
-    }
-
-    public function setLambdaFunction(string $lambdaFunction): void
-    {
-        $this->lambdaFunction = $lambdaFunction;
     }
 
     public function getPhpFpm(): PhpFpm
@@ -249,7 +224,7 @@ class Bootstrap
 
         try {
             $store = new LambdaResult;
-            $thread = new LambdaRunner($store, $this->lambdaFunction, $this->requestBody, json_encode($this->context));
+            $thread = new LambdaRunner($store, 'lambda', $this->requestBody, json_encode($this->context));
             $thread->start() && $thread->join();
         } catch (\Throwable $e) {
             self::consoleLog('ERROR: ' . $e->getMessage());

@@ -11,6 +11,7 @@ namespace STS\Bref\Bridge\Services;
 use STS\Bref\Bridge\Models\LambdaResult;
 use Thread;
 use Threaded;
+use function json_encode;
 
 class LambdaRunner extends Thread
 {
@@ -113,8 +114,8 @@ class LambdaRunner extends Thread
     /**
      * Ensure we are joined, and then return the result.
      **/
-    public function __toString(): array
+    public function __toString(): string
     {
-        return $this->store->getResult();
+        return json_encode($this->store->getResult());
     }
 }

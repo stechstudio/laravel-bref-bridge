@@ -8,10 +8,20 @@
 
 namespace STS\Bref\Bridge\Lambda;
 
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Events\Dispatcher;
+use Illuminate\Foundation\Bootstrap\BootProviders;
+use Illuminate\Foundation\Bootstrap\HandleExceptions;
+use Illuminate\Foundation\Bootstrap\LoadConfiguration;
+use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
+use Illuminate\Foundation\Bootstrap\RegisterFacades;
+use Illuminate\Foundation\Bootstrap\RegisterProviders;
+use Illuminate\Foundation\Bootstrap\SetRequestForConsole;
 use STS\Bref\Bridge\Lambda\Application as Lambda;
 use STS\Bref\Bridge\Lambda\Contracts\Kernel as KernelContract;
+use STS\Bref\Bridge\Lambda\Contracts\Registrar;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
 
 class Kernel implements KernelContract
 {
@@ -34,6 +44,20 @@ class Kernel implements KernelContract
 
     /** @var array */
     protected $output;
+    /**
+     * The bootstrap classes for the application.
+     *
+     * @var array
+     */
+    protected $bootstrappers = [
+        LoadEnvironmentVariables::class,
+        LoadConfiguration::class,
+        HandleExceptions::class,
+        RegisterFacades::class,
+        SetRequestForConsole::class,
+        RegisterProviders::class,
+        BootProviders::class,
+    ];
 
     /**
      * Create a new Lambda kernel instance.
@@ -49,7 +73,7 @@ class Kernel implements KernelContract
         try {
             $this->bootstrap();
             $this->output = $this->getLambda()->run($event, $context);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             $e = new FatalThrowableError($e);
             $this->reportException($e);
             return $this->renderException($e);
@@ -69,10 +93,20 @@ class Kernel implements KernelContract
         $this->app->loadDeferredProviders();
     }
 
+    /**
+     * Get the bootstrap classes for the application.
+     *
+     * @return array
+     */
+    protected function bootstrappers(): array
+    {
+        return $this->bootstrappers;
+    }
+
     protected function getLambda(): Lambda
     {
         if ($this->lambda === null) {
-            return $this->lambda = new Lambda($this->events);
+            return $this->lambda = new Lambda($this->events, $this->app[Registrar::class]);
         }
         return $this->lambda;
     }
@@ -80,7 +114,7 @@ class Kernel implements KernelContract
     /**
      * Report the exception to the exception handler.
      */
-    protected function reportException(Exception $e): void
+    protected function reportException(\Throwable $e): void
     {
         $this->app[ExceptionHandler::class]->report($e);
     }
