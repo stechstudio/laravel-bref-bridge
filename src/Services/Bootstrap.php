@@ -218,7 +218,7 @@ class Bootstrap
     {
         $event = Event::fromString($this->requestBody);
         if (ApiGatewayProxyRequest::supports($event)) {
-            $this->reportResult($this->phpFpm->proxy($event)->toApiGatewayFormat());
+            $this->reportResult($this->phpFpm->proxy($event->toArray())->toApiGatewayFormat());
             return;
         }
 
