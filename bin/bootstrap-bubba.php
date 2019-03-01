@@ -19,7 +19,6 @@ handleVendorAutoload();
 /** @var Bootstrap $bootstrap */
 $bootstrap = getBootstrap();
 initializePhpFpm($bootstrap);
-setLambdaFunction($bootstrap, 'lambda');
 
 while (true) {
     try {
