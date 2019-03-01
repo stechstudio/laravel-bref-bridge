@@ -9,6 +9,7 @@
 namespace STS\Bref\Bridge\Services;
 
 use Bref\Runtime\PhpFpm;
+use Illuminate\Support\Facades\Log;
 use STS\AwsEvents\Events\ApiGatewayProxyRequest;
 use STS\AwsEvents\Events\Event;
 use STS\Bref\Bridge\Models\LambdaResult;
@@ -260,12 +261,14 @@ class Bootstrap
         self::consoleLog('reportResult');
         // Initialize a new cURL resource for reporting.
         $this->initInvocationResult();
+
         // If we have a body, it needs to be encoded within the response.
         if (array_key_exists('body', $response)) {
             $response['body'] = json_encode($response['body']);
         }
         // Now we can encode everything.
         $response_json = json_encode($response);
+        Log::info($response_json);
         // Set up curl
         curl_setopt(
             $this->result,
