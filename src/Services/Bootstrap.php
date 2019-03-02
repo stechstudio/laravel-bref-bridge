@@ -234,7 +234,7 @@ class Bootstrap
             $store = new Threaded;
             $thread = new LambdaRunner($store, $this->requestBody, json_encode($this->context));
             $thread->start(PTHREADS_INHERIT_NONE) && $thread->join();
-            $this->reportResult($store[0]);
+            $this->reportResult($store->shift());
         } catch (\Throwable $e) {
             self::consoleLog('ERROR: ' . $e->getMessage());
             $response = [
