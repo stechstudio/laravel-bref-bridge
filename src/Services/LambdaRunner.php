@@ -12,6 +12,7 @@ use STS\Bref\Bridge\Lambda\Contracts\Application as LambdaContract;
 use STS\Bref\Bridge\Lambda\Kernel;
 use Thread;
 use Threaded;
+use const PTHREADS_INHERIT_NONE;
 
 class LambdaRunner extends Thread
 {
@@ -35,10 +36,6 @@ class LambdaRunner extends Thread
     private $joined;
 
     /**
-     * Caller constructor
-     *
-     * Provide a passthrough to call_user_func_array
-     *
      * @param mixed ...$params
      */
     public function __construct(Threaded $store, ...$params)
@@ -49,14 +46,14 @@ class LambdaRunner extends Thread
     }
 
     /**
-     * Static method to create our threads
+     * Static method to create and start our threads
      *
      * @param mixed ...$params
      */
     public static function call(Threaded $store, ...$params): LambdaRunner
     {
         $thread = new LambdaRunner($store, ...$params);
-        if ($thread->start()) {
+        if ($thread->start(PTHREADS_INHERIT_NONE)) {
             return $thread;
         }
     }
@@ -89,12 +86,18 @@ class LambdaRunner extends Thread
          * this thread has been destroyed would lead to RuntimeException of:
          * "pthreads detected an attempt to connect to an object which has already
          * been destroyed in %s:%d"
+         *
          * See this StackOverflow post for additional information:
          * https://stackoverflow.com/a/44852650/4530326
          */
         $this->store[] = (array) $this->lambda(...$this->params);
     }
 
+    /**
+     * Laravel entry point for Lambda execution.
+     *
+     * This is the public/index.php or the artisan of our Lambda.
+     */
     protected function lambda(string $event, string $context): array
     {
         define('LARAVEL_START', microtime(true));
@@ -111,6 +114,9 @@ class LambdaRunner extends Thread
         |
         */
 
+        /**
+         * Why? Because we chose not to inherit it from the parent thread.
+         */
         require __DIR__ . '/../../../../../vendor/autoload.php';
 
         $app = require_once __DIR__ . '/../../../../../bootstrap/app.php';
@@ -126,6 +132,7 @@ class LambdaRunner extends Thread
         |
         */
 
+        // Inject the Lambda Kernel
         $app->singleton(
             LambdaContract::class,
             Kernel::class
