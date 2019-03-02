@@ -9,7 +9,6 @@
 namespace STS\Bref\Bridge\Lambda\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use STS\Bref\Bridge\Lambda\Contracts\Registrar;
 
 /**
  * @method static array dispatch(Event $event, Context $context)
