@@ -18,4 +18,6 @@ parameters:
     - '#Call to.*Laravel.*#'
     - '#Cannot access offset .STS..Bref..Bridge…. on Illuminate.Contracts.Foundation.Application.#'
     - '#Cannot access offset .Illuminate…. on Illuminate.Contracts.Foundation.Application.#'
+    - '#Cannot access an offset on Threaded.#'
+    - '#Cannot assign new offset to Threaded.#'
     # Ignore other PHP Dark Magic
