@@ -92,7 +92,7 @@ class LambdaRunner extends Thread
          * See this StackOverflow post for additional information:
          * https://stackoverflow.com/a/44852650/4530326
          */
-        $this->store[0] = (array) $this->lambda(...$this->params);
+        $this->store[] = (array) $this->lambda(...$this->params);
     }
 
     protected function lambda(string $event, string $context): array
