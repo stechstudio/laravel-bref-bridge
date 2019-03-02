@@ -22,19 +22,19 @@ class ConfigureSam
     public function handle(SamConfigurationRequested $event): void
     {
         $this->config = Yaml::parseFile(base_path('template.yaml'), Yaml::PARSE_CUSTOM_TAGS);
-        $this->setFunctionName('Website', config('bref.website_name'));
-        $this->setFunctionName('Artisan', config('bref.artisan_name'));
+        $this->setFunctionName(config('bref.name'));
         $this->setEnvironmentVariables();
+        $this->setSqsJobEvent();
         file_put_contents(base_path('template.yaml'), Yaml::dump($this->config, 10, 4));
     }
 
     /**
      * Sets the function names for us.
      */
-    protected function setFunctionName(string $resource, string $functionName): void
+    protected function setFunctionName(string $functionName): void
     {
-        if (array_key_exists($resource, $this->config['Resources'])) {
-            $this->config['Resources'][$resource]['Properties']['FunctionName'] = $functionName;
+        if (array_key_exists('Laravel', $this->config['Resources'])) {
+            $this->config['Resources']['Laravel']['Properties']['FunctionName'] = $functionName;
         }
     }
 
@@ -62,6 +62,19 @@ class ConfigureSam
                 $variableName,
                 ''
             );
+        }
+    }
+
+    public function setSqsJobEvent(): void
+    {
+        if (! config('bref.sqs.jobs.trigger')) {
+            return;
+        }
+
+        if (array_key_exists('Laravel', $this->config['Resources'])) {
+            $this->config['Resources']['Laravel']['Properties']['Events']['SqsJobs']['Type'] = 'SQS';
+            $this->config['Resources']['Laravel']['Properties']['Events']['SqsJobs']['Properties']['Queue'] = config('bref.sqs.jobs.arn');
+            $this->config['Resources']['Laravel']['Properties']['Events']['SqsJobs']['Properties']['BatchSize'] = config('bref.sqs.jobs.batch_size');
         }
     }
 
