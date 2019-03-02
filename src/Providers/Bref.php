@@ -144,7 +144,7 @@ class Bref extends ServiceProvider
         }
 
         $this->publishes([$this->configPath => $publishConfigPath], 'bref-configuration');
-        $this->publishes([$this->routesPath => base_path('routes/lambda.php')], 'bref-routes');
+        $this->publishes([$this->routesPath => base_path('routes/lambda.example.php')], 'bref-routes');
         $this->publishes([$this->samTemplatePath => base_path('template.yaml')], 'bref-sam-template');
     }
 
