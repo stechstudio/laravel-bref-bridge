@@ -9,6 +9,7 @@
 namespace STS\Bref\Bridge\Lambda;
 
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Collection;
 use STS\AwsEvents\Contexts\Context;
 use STS\AwsEvents\Events\ApiGatewayProxyRequest;
@@ -88,15 +89,22 @@ class Router implements Registrar
      * @var Context
      */
     protected $currentContext;
+    /**
+     * The container
+     *
+     * @var Application
+     */
+    private $app;
 
 
     /**
      * Create a new Router instance.
      */
-    public function __construct(Dispatcher $laravelEventDispatcher)
+    public function __construct(Dispatcher $laravelEventDispatcher, Application $app)
     {
         $this->laravelEventDispatcher = $laravelEventDispatcher;
         $this->routes = new Collection;
+        $this->app = $app;
     }
 
     /**
@@ -144,9 +152,18 @@ class Router implements Registrar
 
     /**
      * Registers a controller for a particular event by name.
+     *
+     * @param mixed $controller
      */
-    public function register(string $eventName, callable $controller): Registrar
+    public function register(string $eventName, $controller): Registrar
     {
+        if (! is_callable($controller)) {
+            if (! class_exists($controller)) {
+                throw new InvalidEventController(sprintf('[%s] -> [%s] is invalid.', $eventName, $controller));
+            }
+
+            $controller = [$this->app->make($controller), 'handle'];
+        }
         $this->routes->put($eventName, $controller);
         return $this;
     }
@@ -157,15 +174,7 @@ class Router implements Registrar
     public function registerConfiguredControllers(array $config): Registrar
     {
         foreach ($config as $eventName => $controller) {
-            if (is_callable($controller)) {
-                $this->register($eventName, $controller);
-                continue;
-            }
-            if (class_exists($controller)) {
-                $this->register($eventName, [new $controller, 'handle']);
-                continue;
-            }
-            throw new InvalidEventController(sprintf('[%s] -> [%s] is invalid.', $eventName, $controller));
+            $this->register($eventName, $controller);
         }
         return $this;
     }
