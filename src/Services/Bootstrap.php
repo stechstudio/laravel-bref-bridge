@@ -58,9 +58,18 @@ class Bootstrap
      * @var array
      */
     private $context;
-    /** @var string */
+    /**
+     * Absolute path to our vendor/autoload.
+     *
+     * @var string
+     */
     private $vendorAutoload;
-    /** @var PhpFpm */
+
+    /**
+     * Reference to the PHP FPM object we are using.
+     *
+     * @var PhpFpm
+     */
     private $phpFpm;
 
     /**
@@ -74,11 +83,6 @@ class Bootstrap
         $this->rumtimeAPI = (string) getenv('AWS_LAMBDA_RUNTIME_API');
         $this->initInvocationFetcher();
         $this->initInvocationError();
-
-        /**
-         * $phpFpm = new PhpFpm($handler);
-         * $phpFpm->start();
-         */
     }
 
     /**
@@ -112,26 +116,41 @@ class Bootstrap
         curl_setopt($this->error, CURLOPT_RETURNTRANSFER, true);
     }
 
+    /**
+     * Get the PHP FPM object we are using
+     */
     public function getPhpFpm(): PhpFpm
     {
         return $this->phpFpm;
     }
 
+    /**
+     * Set the PHP FPM object to use.
+     */
     public function setPhpFpm(PhpFpm $phpFpm): void
     {
         $this->phpFpm = $phpFpm;
     }
 
+    /**
+     * Start up PHP FPM
+     */
     public function startPhpFpm(): void
     {
         $this->phpFpm->start();
     }
 
+    /**
+     * Get our vendor autoload path.
+     */
     public function getVendorAutoload(): string
     {
         return $this->vendorAutoload;
     }
 
+    /**
+     * Set the vendor autoload path.
+     */
     public function setVendorAutoload(string $vendorAutoload): void
     {
         $this->vendorAutoload = $vendorAutoload;
@@ -142,7 +161,6 @@ class Bootstrap
      */
     public function handleInvocation(): void
     {
-        self::consoleLog('handleInvocation');
         // Reset all our task specific variables.
         $this->clearTaskParams();
         try {
@@ -220,22 +238,38 @@ class Bootstrap
         }
     }
 
+    /**
+     * We effectively have two paths of execution.
+     *
+     * If this even is from API Gateway, then we will handle it like any other
+     * HTTP Request, and simply proxy it over to PHP FPM
+     *
+     * If it is any other event, we will spin off a pthread and bootstrap into
+     * the Laravel Lambda Kernel.
+     *
+     * Finally, we will report back any results to the Lambda API signaling we are done.
+     */
     public function executeLambda(): void
     {
         $event = Event::fromString($this->requestBody);
 
+        // The PHP FPM Path
         if (ApiGatewayProxyRequest::supports($event)) {
             $this->phpFpm->ensureStillRunning();
             $this->reportResult($this->phpFpm->proxy($event->toArray())->toApiGatewayFormat());
             return;
         }
 
+        // The threaded path.
         try {
             $store = new Threaded;
             $thread = new LambdaRunner($store, $this->requestBody, json_encode($this->context));
+            // Note that the thread inherits nothing from the parent,
+            // resolving any sort of contamination.
             $thread->start(PTHREADS_INHERIT_NONE) && $thread->join();
             $this->reportResult($store->shift());
         } catch (\Throwable $e) {
+            // This is all error handling.
             self::consoleLog('ERROR: ' . $e->getMessage());
             $response = [
                 'statusCode' => 500,
