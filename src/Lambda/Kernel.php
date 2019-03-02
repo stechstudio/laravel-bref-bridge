@@ -39,13 +39,22 @@ class Kernel implements KernelContract
      */
     protected $events;
 
-    /** @var Lambda */
+    /**
+     * The Lambda Application this kernel is managing.
+     *
+     * @var Lambda
+     */
     protected $lambda;
 
-    /** @var array */
-    protected $output;
     /**
-     * The bootstrap classes for the application.
+     * Stores the output from the Lambda Application.
+     *
+     * @var array
+     */
+    protected $output;
+
+    /**
+     * The bootstrap classes for the Lambda application.
      *
      * @var array
      */
@@ -68,6 +77,10 @@ class Kernel implements KernelContract
         $this->events = $events;
     }
 
+    /**
+     * Pass the Lambda event/context on the application,
+     * store the results, then return said results.
+     */
     public function handle(string $event, string $context): array
     {
         try {
@@ -82,7 +95,7 @@ class Kernel implements KernelContract
     }
 
     /**
-     * Bootstrap the application for artisan commands.
+     * Bootstrap the lambda application.
      */
     public function bootstrap(): void
     {
@@ -94,15 +107,16 @@ class Kernel implements KernelContract
     }
 
     /**
-     * Get the bootstrap classes for the application.
-     *
-     * @return array
+     * Get the bootstrap classes for the Lambda application.
      */
     protected function bootstrappers(): array
     {
         return $this->bootstrappers;
     }
 
+    /**
+     * Gets the Lambda Application for us.
+     */
     protected function getLambda(): Lambda
     {
         if ($this->lambda === null) {
@@ -131,6 +145,9 @@ class Kernel implements KernelContract
         ];
     }
 
+    /**
+     * Returns the Application results.
+     */
     public function output(): array
     {
         return $this->output;
