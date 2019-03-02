@@ -71,7 +71,7 @@ Apart from API Gateway, we currently support routing for all (sixteen) of the ot
 ```
 $ artisan vendor:publish --tag=bref-routes
 ```
-This will result in a `routes/lambda.example.php` being placed in your project. You will need to manually rename it to `routes/lambda.php` before it will be used. When [you look at it](routes/lambda.example.php) you will notice that it follows the same paradigm as the HTTP Routes. You may either map a callback or map a Lambda Controller. 
+This will result in a `routes/lambda.example.php` being placed in your project. You will need to manually rename it to `routes/lambda.php` before it will be used. When [you look at it](routes/lambda.php) you will notice that it follows the same paradigm as the HTTP Routes. You may either map a callback or map a Lambda Controller. 
 
 The router will then ensure that when an event of the type you are routing shows up, it gets passed on to the appropriate `callable` to handle the event. You simply need to return an `array` when you are done. To help you with testing the routing of various events, here are some samples. 
 
