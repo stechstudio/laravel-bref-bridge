@@ -15,7 +15,6 @@ use STS\AwsEvents\Events\Event;
 use STS\Bref\Bridge\Events\LambdaStarting;
 use STS\Bref\Bridge\Lambda\Contracts\Application as ApplicationContract;
 use STS\Bref\Bridge\Lambda\Contracts\Registrar;
-use function exceptionToArray;
 
 class Application implements ApplicationContract
 {
@@ -49,8 +48,8 @@ class Application implements ApplicationContract
             $this->currentEvent = Event::fromString($event);
         } catch (\Throwable $t) {
             Log::error('Failed to convert event string to an event object.');
-            Log:
-            debug(exceptionToArray($t));
+            Log::debug($t->getMessage());
+            Log::debug($t->getTraceAsString());
             throw $t;
         }
         $this->currentContext = Context::fromJson($context);
