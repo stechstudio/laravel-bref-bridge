@@ -15,6 +15,7 @@ use STS\Bref\Bridge\Events\LambdaPackageRequested;
 use STS\Bref\Bridge\Events\SamConfigurationRequested;
 use STS\Bref\Bridge\Events\UpdateRequested;
 use STS\Bref\Bridge\Lambda\Contracts\Registrar;
+use STS\Bref\Bridge\Lambda\Facades\LambdaRoute;
 use STS\Bref\Bridge\Lambda\Router;
 use STS\Bref\Bridge\Services\ConfigureSam;
 use STS\Bref\Bridge\Services\DeployFunction;
@@ -177,7 +178,7 @@ class Bref extends ServiceProvider
      */
     public function provides(): array
     {
-        return ['LambdaRouter', EnvSecurityManager::class];
+        return ['LambdaRouter', Registrar::class];
     }
 
     /**
@@ -197,6 +198,6 @@ class Bref extends ServiceProvider
 
         $this->mergeConfigFrom($this->configPath, 'bref');
         $this->commands($this->commandList);
-        \LambdaRoute::registerFromFile(base_path('routes/lambda.php'));
+        LambdaRoute::registerFromFile(base_path('routes/lambda.php'));
     }
 }
