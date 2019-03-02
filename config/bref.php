@@ -14,6 +14,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | SQS Job Queue
+    |--------------------------------------------------------------------------
+    |
+    | Lambda consumption of job queues gets configured here. Publishing jobs
+    | to queues still works as normal, So no changes there. Just update the .env
+    |
+    */
+
+    'sqs' => [
+        'jobs' => [
+            'trigger' => env('SQS_TRIGGER_JOBS', false),
+            'arn' => env('SQS_JOB_QUEUE_ARN', ''),
+            'batch_size' => env('SQS_JOB_QUEUE_BATCH_SIZE', 1),
+        ],
+    ],
+
+
+    /*
+    |--------------------------------------------------------------------------
     |Packaging
     |--------------------------------------------------------------------------
     |
