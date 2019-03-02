@@ -12,7 +12,9 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\Log;
 use STS\AwsEvents\Contexts\Context;
 use STS\AwsEvents\Events\Event;
+use STS\Bref\Bridge\Events\LambdaRunning;
 use STS\Bref\Bridge\Events\LambdaStarting;
+use STS\Bref\Bridge\Events\LambdaStopping;
 use STS\Bref\Bridge\Lambda\Contracts\Application as LambdaContract;
 use STS\Bref\Bridge\Lambda\Contracts\Registrar;
 
@@ -84,6 +86,7 @@ class Application implements LambdaContract
      */
     public function run(string $event, string $context): array
     {
+        $this->laravelEventDispatcher->dispatch(new LambdaRunning($this));
         try {
             $this->currentEvent = Event::fromString($event);
         } catch (\Throwable $t) {
@@ -104,8 +107,7 @@ class Application implements LambdaContract
             Log::error('Failed to route the Event.');
             throw $this->logThrowables($t);
         }
+        $this->laravelEventDispatcher->dispatch(new LambdaStopping($this));
         return $this->output();
     }
-
-
 }

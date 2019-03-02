@@ -37,7 +37,7 @@ class Kernel implements KernelContract
      *
      * @var \Illuminate\Contracts\Events\Dispatcher
      */
-    protected $events;
+    protected $laravelEventDispatcher;
 
     /**
      * The Lambda Application this kernel is managing.
@@ -71,10 +71,10 @@ class Kernel implements KernelContract
     /**
      * Create a new Lambda kernel instance.
      */
-    public function __construct(Application $app, Dispatcher $events)
+    public function __construct(Application $app, Dispatcher $laravelEventDispatcher)
     {
         $this->app = $app;
-        $this->events = $events;
+        $this->laravelEventDispatcher = $laravelEventDispatcher;
     }
 
     /**
@@ -120,7 +120,7 @@ class Kernel implements KernelContract
     protected function getLambda(): Lambda
     {
         if ($this->lambda === null) {
-            return $this->lambda = new Lambda($this->events, $this->app[Registrar::class]);
+            return $this->lambda = new Lambda($this->laravelEventDispatcher, $this->app[Registrar::class]);
         }
         return $this->lambda;
     }

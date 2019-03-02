@@ -29,6 +29,8 @@ use STS\AwsEvents\Events\ScheduledEvent;
 use STS\AwsEvents\Events\SesEmailReceiving;
 use STS\AwsEvents\Events\Sns;
 use STS\AwsEvents\Events\Sqs;
+use STS\Bref\Bridge\Events\LambdaRouterDispatched;
+use STS\Bref\Bridge\Events\LambdaRouterDispatching;
 use STS\Bref\Bridge\Exceptions\InvalidEventController;
 use STS\Bref\Bridge\Lambda\Contracts\Registrar;
 use function call_user_func;
@@ -65,9 +67,9 @@ class Router implements Registrar
     /**
      * The event dispatcher instance.
      *
-     * @var \Illuminate\Contracts\Events\Dispatcher
+     * @var Dispatcher
      */
-    protected $events;
+    protected $laravelEventDispatcher;
     /**
      * The route collection .
      *
@@ -91,9 +93,9 @@ class Router implements Registrar
     /**
      * Create a new Router instance.
      */
-    public function __construct(Dispatcher $events)
+    public function __construct(Dispatcher $laravelEventDispatcher)
     {
-        $this->events = $events;
+        $this->laravelEventDispatcher = $laravelEventDispatcher;
         $this->routes = new Collection;
     }
 
@@ -102,6 +104,7 @@ class Router implements Registrar
      */
     public function dispatch(Event $event, Context $context): array
     {
+        $this->laravelEventDispatcher->dispatch(new LambdaRouterDispatching($this));
         $this->currentEvent = $event;
         $this->currentContext = $context;
 
@@ -110,7 +113,9 @@ class Router implements Registrar
         if (! $this->hasController($awsEvent)) {
             throw new InvalidEventController('No controller registered for ' . $awsEvent);
         }
-        return call_user_func($this->routes->get(get_class($event)), $event, $context);
+        $result = call_user_func($this->routes->get(get_class($event)), $event, $context);
+        $this->laravelEventDispatcher->dispatch(new LambdaRouterDispatched($this));
+        return $result;
     }
 
     /**
