@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d8fbd69ea186a76a974907c680c4bb8e",
+    "content-hash": "33666f638da58445bb7c8933da9fd47c",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.87.19",
+            "version": "3.87.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "79366d3335649960f49694eb052cbdac6616f843"
+                "reference": "e644b25cbd15a3e335bb115cbf1f78ec48d6b200"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/79366d3335649960f49694eb052cbdac6616f843",
-                "reference": "79366d3335649960f49694eb052cbdac6616f843",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/e644b25cbd15a3e335bb115cbf1f78ec48d6b200",
+                "reference": "e644b25cbd15a3e335bb115cbf1f78ec48d6b200",
                 "shasum": ""
             },
             "require": {
@@ -86,7 +86,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-02-26T19:08:43+00:00"
+            "time": "2019-03-01T21:11:22+00:00"
         },
         {
             "name": "gisostallenberg/file-permission-calculator",
@@ -1124,12 +1124,17 @@
         },
         {
             "name": "stechstudio/aws-events",
-            "version": "dev-master",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stechstudio/aws-events.git",
+                "reference": "4675343b80982a382ecf93a5c093e3278e6184ec"
+            },
             "dist": {
-                "type": "path",
-                "url": "/Users/bubba/develop/stechstudio/aws-events",
-                "reference": "98400726b0a8c17e8695b6cd6440ac5643f3a522",
-                "shasum": null
+                "type": "zip",
+                "url": "https://api.github.com/repos/stechstudio/aws-events/zipball/4675343b80982a382ecf93a5c093e3278e6184ec",
+                "reference": "4675343b80982a382ecf93a5c093e3278e6184ec",
+                "shasum": ""
             },
             "require": {
                 "ext-json": "*",
@@ -1158,6 +1163,7 @@
                 },
                 "files": []
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1168,9 +1174,7 @@
                 }
             ],
             "description": "Event Handling for AWS Lambda",
-            "transport-options": {
-                "symlink": false
-            }
+            "time": "2019-03-02T00:24:42+00:00"
         },
         {
             "name": "symfony/console",
@@ -2564,16 +2568,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.14.1",
+            "version": "2.14.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "e68f869575bd703276be8d4264799cd3cce28107"
+                "reference": "a1f4f9abcde8241ce33bf5090896e9c16d0b4232"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/e68f869575bd703276be8d4264799cd3cce28107",
-                "reference": "e68f869575bd703276be8d4264799cd3cce28107",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/a1f4f9abcde8241ce33bf5090896e9c16d0b4232",
+                "reference": "a1f4f9abcde8241ce33bf5090896e9c16d0b4232",
                 "shasum": ""
             },
             "require": {
@@ -2620,7 +2624,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2019-02-27T13:59:59+00:00"
+            "time": "2019-02-28T09:07:12+00:00"
         },
         {
             "name": "nette/bootstrap",
@@ -2769,33 +2773,33 @@
         },
         {
             "name": "nette/finder",
-            "version": "v2.4.2",
+            "version": "v2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/finder.git",
-                "reference": "ee951a656cb8ac622e5dd33474a01fd2470505a0"
+                "reference": "6be1b83ea68ac558aff189d640abe242e0306fe2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/finder/zipball/ee951a656cb8ac622e5dd33474a01fd2470505a0",
-                "reference": "ee951a656cb8ac622e5dd33474a01fd2470505a0",
+                "url": "https://api.github.com/repos/nette/finder/zipball/6be1b83ea68ac558aff189d640abe242e0306fe2",
+                "reference": "6be1b83ea68ac558aff189d640abe242e0306fe2",
                 "shasum": ""
             },
             "require": {
-                "nette/utils": "~2.4",
-                "php": ">=5.6.0"
+                "nette/utils": "^2.4 || ~3.0.0",
+                "php": ">=7.1"
             },
             "conflict": {
                 "nette/nette": "<2.2"
             },
             "require-dev": {
-                "nette/tester": "~2.0",
+                "nette/tester": "^2.0",
                 "tracy/tracy": "^2.3"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.4-dev"
+                    "dev-master": "2.5-dev"
                 }
             },
             "autoload": {
@@ -2827,7 +2831,7 @@
                 "iterator",
                 "nette"
             ],
-            "time": "2018-06-28T11:49:23+00:00"
+            "time": "2019-02-28T18:13:25+00:00"
         },
         {
             "name": "nette/neon",
@@ -2954,16 +2958,16 @@
         },
         {
             "name": "nette/robot-loader",
-            "version": "v3.1.0",
+            "version": "v3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/robot-loader.git",
-                "reference": "fc76c70e740b10f091e502b2e393d0be912f38d4"
+                "reference": "3e8d75d6d976e191bdf46752ca40a286671219d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/robot-loader/zipball/fc76c70e740b10f091e502b2e393d0be912f38d4",
-                "reference": "fc76c70e740b10f091e502b2e393d0be912f38d4",
+                "url": "https://api.github.com/repos/nette/robot-loader/zipball/3e8d75d6d976e191bdf46752ca40a286671219d2",
+                "reference": "3e8d75d6d976e191bdf46752ca40a286671219d2",
                 "shasum": ""
             },
             "require": {
@@ -3015,7 +3019,7 @@
                 "nette",
                 "trait"
             ],
-            "time": "2018-08-13T14:19:06+00:00"
+            "time": "2019-03-01T20:23:02+00:00"
         },
         {
             "name": "nette/utils",
@@ -4332,9 +4336,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "stechstudio/aws-events": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
