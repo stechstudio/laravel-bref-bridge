@@ -13,49 +13,99 @@ use Illuminate\Support\Facades\Log;
 use STS\AwsEvents\Contexts\Context;
 use STS\AwsEvents\Events\Event;
 use STS\Bref\Bridge\Events\LambdaStarting;
-use STS\Bref\Bridge\Lambda\Contracts\Application as ApplicationContract;
+use STS\Bref\Bridge\Lambda\Contracts\Application as LambdaContract;
 use STS\Bref\Bridge\Lambda\Contracts\Registrar;
 
-class Application implements ApplicationContract
+class Application implements LambdaContract
 {
 
-    /** @var array */
+    /**
+     * Stores the results from routing the Lambda Event
+     *
+     * @var array
+     */
     protected $output = [];
-    /** @var Event */
+    /**
+     * The event we are currently working on.
+     *
+     * @var Event
+     */
     protected $currentEvent;
-    /** @var Context */
+    /**
+     * The context for the event we are currently working on.
+     *
+     * @var Context
+     */
     protected $currentContext;
-    /** @var Dispatcher */
-    private $events;
-    /** @var Registrar */
-    private $router;
+    /**
+     * This is the Laravel Event dispatcher, do not confuse
+     * it with the Lambda Event router.
+     *
+     * @var Dispatcher
+     */
+    private $laravelEventDispatcher;
 
-    public function __construct(Dispatcher $events, Registrar $router)
+    /**
+     * This is the event router for Lambda events.
+     *
+     * @var Registrar
+     */
+    private $lambdaEventRouter;
+
+    public function __construct(Dispatcher $laravelEventDispatcher, Registrar $lambdaEventRouter)
     {
-        $this->events = $events;
-        $this->events->dispatch(new LambdaStarting($this));
-        $this->router = $router;
+        $this->laravelEventDispatcher = $laravelEventDispatcher;
+        $this->laravelEventDispatcher->dispatch(new LambdaStarting($this));
+        $this->lambdaEventRouter = $lambdaEventRouter;
     }
 
+    /**
+     * Little debug helper until we sort out a Lambda exception Handler.
+     */
+    protected function logThrowables(\Throwable $t): \Throwable
+    {
+        Log::debug($t->getMessage());
+        Log::debug($t->getTraceAsString());
+        return $t;
+    }
+
+    /**
+     * Returns the Lambda Router results.
+     */
     public function output(): array
     {
         return $this->output;
     }
 
+    /**
+     * Run the application.
+     * Generates the event and context objexts.
+     * Then sends them off through the router and returns the results.
+     */
     public function run(string $event, string $context): array
     {
         try {
             $this->currentEvent = Event::fromString($event);
         } catch (\Throwable $t) {
             Log::error('Failed to convert event string to an event object.');
-            Log::debug($t->getMessage());
-            Log::debug($t->getTraceAsString());
-            throw $t;
+            throw $this->logThrowables($t);
         }
-        $this->currentContext = Context::fromJson($context);
-        $this->output = $this->router->dispatch($this->currentEvent, $this->currentContext);
 
+        try {
+            $this->currentContext = Context::fromJson($context);
+        } catch (\Throwable $t) {
+            Log::error('Failed to convert context string to an context object.');
+            throw $this->logThrowables($t);
+        }
 
+        try {
+            $this->output = $this->lambdaEventRouter->dispatch($this->currentEvent, $this->currentContext);
+        } catch (\Throwable $t) {
+            Log::error('Failed to route the Event.');
+            throw $this->logThrowables($t);
+        }
         return $this->output();
     }
+
+
 }

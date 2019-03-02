@@ -8,7 +8,6 @@
 
 namespace STS\Bref\Bridge\Lambda\Contracts;
 
-
 interface Application
 {
     /**
