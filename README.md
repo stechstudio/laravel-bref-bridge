@@ -47,7 +47,22 @@ New edit your `.env` file and add:
 BREF_NAME="<my-lambdas-name>"
 BREF_S3_BUCKET="<bucket-name>"
 ```
+
+
+### SQS Job Queue
+If you would like to setup an SQS Queue to trigger your lambda to run Laravel Jobs you will need to setup an SQS Queue like you normally would. Check the AWS Documentation on how to [Create an Amazon SQS Queue](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs-example.html#with-sqs-configure-sqs). Then, using that queue information, add the folling to your `.env` file.
+```ini
+SQS_TRIGGER_JOBS=true
+QUEUE_CONNECTION=sqs
+SQS_KEY=<key for user that has access to this sqs queue>
+SQS_SECRET=<secret for user that has access to this sqs queue>
+SQS_QUEUE=<QueueName>
+SQS_PREFIX=https://sqs.us-east-1.amazonaws.com/<AWS ID>
+SQS_JOB_QUEUE_ARN=arn:aws:sqs:us-east-1:<AWS ID>:<QueueName>
+```
 Once you have edited the `.env` sorted, lets publish the SAM template.
+
+*NOTE:* The way this works is that you are making this particular SQS Queue the default queue for your application. You can then dispatch jobs to the queue from this lambda job, or anywhere else even, and an event will be sent to Lambda triggering it to run the job. It is intended to work seemlessly with the built in Laravel SQS queue paradigm. If you run into any confusion or challenges with it, please open a Github Issue so we can sort it out.
 
 ### SAM Template
 ```
