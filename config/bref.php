@@ -27,6 +27,18 @@ return [
             'trigger' => env('SQS_TRIGGER_JOBS', false),
             'arn' => env('SQS_JOB_QUEUE_ARN', 'defaltz'),
             'batch_size' => env('SQS_JOB_QUEUE_BATCH_SIZE', 1),
+            'credentials' => [
+                'access_key_id' => env('SQS_KEY'),
+                'secret_access_key' => env('SQS_SECRET'),
+            ],
+            'options' => [
+                'delay' => env('SQS_JOB_DELAY', 0),
+                'sleep' => env('SQS_JOB_SLEEP', 3),
+                'force' => env('SQS_JOB_FORCE', false),
+                'memory' => env('SQS_JOB_MEMORY', env('AWS_LAMBDA_FUNCTION_MEMORY_SIZE', 128)),
+                'timeout' => env('SQS_JOB_TIMEOUT', 60),
+                'max_retries' => env('SQS_JOB_MAX_RETRIES', 0),
+            ],
         ],
     ],
 
