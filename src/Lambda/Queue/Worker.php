@@ -11,8 +11,6 @@ namespace STS\Bref\Bridge\Lambda\Queue;
 use Aws\Credentials\Credentials;
 use Aws\Sqs\SqsClient;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\Queue\Job;
-use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Queue\Worker as IlluminateQueWorker;
 use Illuminate\Queue\WorkerOptions;
 
@@ -22,13 +20,9 @@ class Worker extends IlluminateQueWorker
     protected $options;
     /** @var Credentials */
     protected $credentials;
-    /**
-     * @var Application
-     */
+    /** @var Application */
     private $app;
-    /**
-     * @var SqsClient
-     */
+    /** @var SqsClient */
     private $sqs;
 
     /**
@@ -80,7 +74,7 @@ class Worker extends IlluminateQueWorker
 
         $sqsJob = new SqsJob(
             $this->app,
-            $sqs,
+            $this->sqs,
             $event->get('Records')->first(),
             $this->connectionName,
             $matches['queue']
@@ -92,7 +86,7 @@ class Worker extends IlluminateQueWorker
     /**
      * We do not use this. If it gets called, throw a hissy fit.
      */
-    public function daemon(string $connectionName, string $queue, WorkerOptions $options): void
+    public function daemon($connectionName, $queue, WorkerOptions $options)
     {
         throw new \RuntimeException(__METHOD__ . 'is unused in this worker');
     }
@@ -101,7 +95,7 @@ class Worker extends IlluminateQueWorker
      * Determine if the daemon should process on this iteration.
      * We do not use it, so it is always false.
      */
-    protected function daemonShouldRun(WorkerOptions $options, string $connectionName, string $queue): bool
+    protected function daemonShouldRun(WorkerOptions $options, $connectionName, $queue)
     {
         return false;
     }
@@ -109,7 +103,7 @@ class Worker extends IlluminateQueWorker
     /**
      * Get the next job from the queue connection.
      */
-    protected function getNextJob(Queue $connection, string $queue): ?Job
+    protected function getNextJob($connection, $queue)
     {
         return null;
     }
@@ -117,7 +111,7 @@ class Worker extends IlluminateQueWorker
     /**
      * Pause the worker for the current loop. But we don't loop, so just return.
      */
-    protected function pauseWorker(WorkerOptions $options, int $lastRestart): void
+    protected function pauseWorker(WorkerOptions $options, $lastRestart)
     {
         return;
     }
@@ -125,7 +119,7 @@ class Worker extends IlluminateQueWorker
     /**
      * Process the next job on the queue. But, we don't actually listen to a queue
      */
-    public function runNextJob(string $connectionName, string $queue, WorkerOptions $options): void
+    public function runNextJob($connectionName, $queue, WorkerOptions $options)
     {
         return;
     }
