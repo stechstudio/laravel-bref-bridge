@@ -15,7 +15,9 @@ Globals:
         SESSION_DRIVER: array
 
 Resources:
-  Laravel:
+  # This is the resource Identifier
+  LaravelFunction:
+    # This resource creates a Lambda function.
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: 'laravel'
@@ -24,20 +26,33 @@ Resources:
       Timeout: 30 # in seconds (API Gateway has a timeout of 30 seconds)
       Runtime: provided
       MemorySize: 3008
+      Policies:
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt Job_Queue.QueueName
+        -
       Layers:
         - 'arn:aws:lambda:us-east-1:209497400698:layer:php-73-fpm:2'
       Events:
         # The function will match all HTTP URLs
-        HttpRoot:
+        LaravelRootApi:
           Type: Api
           Properties:
             Path: /
             Method: ANY
-        HttpSubPaths:
+        LaravelSubPathApi:
           Type: Api
           Properties:
             Path: /{proxy+}
             Method: ANY
+        LaravelJobQueue:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt Job_Queue.Arn
+            BatchSize: 1
+  Job_Queue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: Laravel_Job_Queue
 
 Outputs:
   DemoHttpApi:
