@@ -10,9 +10,14 @@ namespace STS\Bref\Bridge\Lambda\Queue;
 
 use Aws\Credentials\Credentials;
 use Aws\Sqs\SqsClient;
+use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Queue\QueueManager;
 use Illuminate\Queue\Worker as IlluminateQueWorker;
 use Illuminate\Queue\WorkerOptions;
+use STS\AwsEvents\Contexts\Context;
+use STS\AwsEvents\Events\Event;
 
 class Worker extends IlluminateQueWorker
 {
@@ -57,7 +62,7 @@ class Worker extends IlluminateQueWorker
     /**
      * This is our entry point.
      */
-    public function handle(Event $event, Context $context): void
+    public function handle(Event $event, Context $context): array
     {
         $payload = $event->get('Records')->first()->get('body');
         preg_match(
@@ -71,16 +76,29 @@ class Worker extends IlluminateQueWorker
             'region' => $matches['region'],
             'credentials' => $this->credentials,
         ]);
+        $payload = $event->get('Records')->first()->toArray();
+        $payload = $this->renameKey('body', 'Body', $payload);
+        $payload = $this->renameKey('receiptHandle', 'ReceiptHandle', $payload);
+        $payload = $this->renameKey('attributes', 'Attributes', $payload);
+        $payload = $this->renameKey('messageId', 'MessageId', $payload);
 
-        $sqsJob = new SqsJob(
+        $sqsJob = new Job(
             $this->app,
             $this->sqs,
-            $event->get('Records')->first(),
+            $payload,
             $this->connectionName,
-            $matches['queue']
+            $matches['aws_id'] . '/' . $matches['queue']
         );
 
         $this->runJob($sqsJob, $this->connectionName, $this->options);
+        return ['message' => 'job done'];
+    }
+
+    public function renameKey(string $orig, string $new, array $payload): array
+    {
+        $payload[$new] = $payload[$orig];
+        unset($payload[$orig]);
+        return $payload;
     }
 
     /**
