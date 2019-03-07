@@ -6,8 +6,6 @@ use Dotenv\Dotenv;
 use STS\Bref\Bridge\Events\SamConfigurationRequested;
 use Symfony\Component\Yaml\Yaml;
 use function base_path;
-use function in_array;
-use function strtolower;
 
 class ConfigureSam
 {
@@ -51,8 +49,8 @@ class ConfigureSam
 
         foreach ($variableNames as $variableName) {
             // These are hard coded, global settings. Ignore them in the .env file.
-            // You can always ecit template.yml yourself if you want to modify them.
-            if (in_array(strtolower($variableName), strtolower(config('bref.env.ignore')))) {
+            // You can always edit template.yml yourself if you want to modify them.
+            if (in_array_icase($variableName, config('bref.env.ignore'))) {
                 continue;
             }
             $this->config['Resources']['LaravelFunction']['Properties']['Environment']['Variables'][$variableName] = (string) env(
