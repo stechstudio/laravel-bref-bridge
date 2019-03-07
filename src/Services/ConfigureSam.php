@@ -20,7 +20,6 @@ class ConfigureSam
         $this->config = Yaml::parseFile(base_path('template.yaml'), Yaml::PARSE_CUSTOM_TAGS);
         $this->setFunctionName(config('bref.name'));
         $this->setEnvironmentVariables();
-        $this->setSqsJobEvent();
         file_put_contents(base_path('template.yaml'), Yaml::dump($this->config, 10, 4));
     }
 
