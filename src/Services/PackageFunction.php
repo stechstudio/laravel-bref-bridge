@@ -29,7 +29,7 @@ class PackageFunction
             '.stack.yaml',
             '--s3-bucket',
             env('BREF_S3_BUCKET'),
-        ]);
+        ], null, $_ENV);
         $process->setWorkingDirectory(base_path());
         $process->start();
 
