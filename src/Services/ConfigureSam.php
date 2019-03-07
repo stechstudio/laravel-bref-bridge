@@ -46,11 +46,11 @@ class ConfigureSam
             $dot->load();
             $variableNames = $dot->getEnvironmentVariableNames();
         }
-
+        $ignoredVariables = config('bref.env.ignore');
         foreach ($variableNames as $variableName) {
             // These are hard coded, global settings. Ignore them in the .env file.
             // You can always edit template.yml yourself if you want to modify them.
-            if (in_array_icase($variableName, config('bref.env.ignore'))) {
+            if (in_array_icase($variableName, $ignoredVariables)) {
                 continue;
             }
             $this->config['Resources']['LaravelFunction']['Properties']['Environment']['Variables'][$variableName] = (string) env(
