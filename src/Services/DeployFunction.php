@@ -15,7 +15,7 @@ class DeployFunction
             '--template-file',
             '.stack.yaml',
             '--capabilities',
-            'CAPABILITY_IAM',
+            'CAPABILITY_NAMED_IAM',
             '--stack-name',
             config('bref.name'),
         ]);
