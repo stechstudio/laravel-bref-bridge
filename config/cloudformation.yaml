@@ -14,9 +14,7 @@ Resources:
       Timeout: 30 # in seconds (API Gateway has a timeout of 30 seconds)
       Runtime: provided
       MemorySize: 3008
-      Policies:
-        - SQSSendMessagePolicy:
-            QueueName: !GetAtt JobQueue.QueueName
+      Role: !GetAtt LaravelFunctionExecutionRole.Arn
       Layers:
         - 'arn:aws:lambda:us-east-1:209497400698:layer:php-73-fpm:2'
       Environment:
@@ -49,6 +47,42 @@ Resources:
           Properties:
             Queue: !GetAtt JobQueue.Arn
             BatchSize: 1
+  LaravelFunctionExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: Laravel_Job_Role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: allowLambdaLogging
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+        - PolicyName: allowSqsTriggerAndPost
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:SendMessage*
+                  - sqs:DeleteMessage
+                  - sqs:ReceiveMessage
+                  - sqs:GetQueueAttributes
+                  - sqs:ChangeMessageVisibility
+                Resource: !GetAtt JobQueue.Arn
   JobQueue:
     Type: AWS::SQS::Queue
     Properties:
