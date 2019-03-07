@@ -29,7 +29,6 @@ Resources:
       Policies:
         - SQSSendMessagePolicy:
             QueueName: !GetAtt JobQueue.QueueName
-        -
       Layers:
         - 'arn:aws:lambda:us-east-1:209497400698:layer:php-73-fpm:2'
       Events:
@@ -55,6 +54,12 @@ Resources:
       QueueName: Laravel_Job_Queue
 
 Outputs:
-  DemoHttpApi:
+  LaravelFunctionApi:
     Description: 'URL of our function in the *Prod* environment'
     Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
+  JobQueueName:
+    Description: 'Name of our Job Queue'
+    Value: !GetAtt JobQueue.QueueName
+  JobQueueArn:
+    Description: 'ARN of our Job Queue'
+    Value: !GetAtt JobQueue.Arn
