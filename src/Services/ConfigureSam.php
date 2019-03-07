@@ -35,6 +35,7 @@ class ConfigureSam
     {
         if (array_key_exists('Laravel', $this->config['Resources'])) {
             $this->config['Resources']['Laravel']['Properties']['FunctionName'] = $functionName;
+            $this->config['Resources']['JobQueue']['Properties']['QueueName'] = $functionName . 'JobQueue';
         }
     }
 
@@ -58,7 +59,7 @@ class ConfigureSam
             if (in_array($variableName, config('bref.env.ignore'))) {
                 continue;
             }
-            $this->config['Globals']['Function']['Environment']['Variables'][$variableName] = (string) env(
+            $this->config['Resources']['Laravel']['Properties']['Environment']['Variables'][$variableName] = (string) env(
                 $variableName,
                 ''
             );
