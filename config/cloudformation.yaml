@@ -28,7 +28,7 @@ Resources:
       MemorySize: 3008
       Policies:
         - SQSSendMessagePolicy:
-            QueueName: !GetAtt Job_Queue.QueueName
+            QueueName: !GetAtt JobQueue.QueueName
         -
       Layers:
         - 'arn:aws:lambda:us-east-1:209497400698:layer:php-73-fpm:2'
@@ -47,9 +47,9 @@ Resources:
         LaravelJobQueue:
           Type: SQS
           Properties:
-            Queue: !GetAtt Job_Queue.Arn
+            Queue: !GetAtt JobQueue.Arn
             BatchSize: 1
-  Job_Queue:
+  JobQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: Laravel_Job_Queue
