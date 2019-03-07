@@ -8,6 +8,7 @@
 
 namespace STS\Bref\Bridge\Console;
 
+use Aws\CloudFormation\CloudFormationClient;
 use Illuminate\Console\Command;
 use STS\Bref\Bridge\Events\DeploymentRequested;
 
@@ -29,6 +30,30 @@ class Deploy extends Command
     public function handle(): int
     {
         event(new DeploymentRequested);
+
+        $client = new CloudFormationClient([
+            'version' => 'latest',
+            'region' => config('bref.region'),
+        ]);
+        $result = $client->describeStacks([
+            'StackName' => config('bref.name'),
+
+        ]);
+
+
+        $outputs = $result->search('Stacks[0].Outputs');
+
+        $this->output->writeln('<fg=yellow>*****************************</>');
+        foreach ($outputs as $output) {
+            $this->output->writeln(
+                sprintf(
+                    '<fg=yellow>%s:</> <fg=green>%s</>',
+                    $output['Description'],
+                    $output['OutputValue']
+                )
+            );
+        }
+
         return 0;
     }
 }

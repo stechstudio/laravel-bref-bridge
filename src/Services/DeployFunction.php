@@ -23,6 +23,7 @@ class DeployFunction
         $process->setTimeout(600);
         $process->start();
 
+
         foreach ($process as $type => $data) {
             echo $data;
         }

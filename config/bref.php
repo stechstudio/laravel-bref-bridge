@@ -14,6 +14,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Bref Region
+    |--------------------------------------------------------------------------
+    |
+    | This value is the region of your Lambda. This value is used when the
+    | framework needs to generate the lambda function regions.
+    |
+    */
+    'region' => env('BREF_DEFAULT_REGION', env('AWS_DEFAULT_REGION')),
+
+    /*
+    |--------------------------------------------------------------------------
     | SQS Job Queue
     |--------------------------------------------------------------------------
     |
