@@ -29,7 +29,8 @@ class ConfigureSam
     protected function setFunctionName(string $functionName): void
     {
         $this->config['Resources']['LaravelFunction']['Properties']['FunctionName'] = $functionName;
-        $this->config['Resources']['JobQueue']['Properties']['QueueName'] = $functionName . 'JobQueue';
+        $this->config['Resources']['JobQueue']['Properties']['QueueName'] = 'JobQueue' . $functionName;
+        $this->config['Resources']['LaravelFunctionExecutionRole']['Properties']['RoleName'] = 'FunctionRole' . $functionName;
     }
 
     /**
