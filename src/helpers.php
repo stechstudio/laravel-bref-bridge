@@ -102,6 +102,13 @@ if (! function_exists('copyFolder')) {
     }
 }
 
+if (! function_exists('in_array_icase')) {
+    function in_array_icase(string $needle, array &$haystack): bool
+    {
+        return (bool) array_uintersect([$needle], $haystack, 'strcasecmp');
+    }
+}
+
 if (! function_exists('exceptionToArray')) {
     function exceptionToArray(?Throwable $e): array
     {
