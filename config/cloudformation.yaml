@@ -28,6 +28,10 @@ Resources:
           LOG_CHANNEL: stderr     # Log to stderr so that everything goes to cloudwatch.
           CACHE_DRIVER: file
           SESSION_DRIVER: array
+          QUEUE_CONNECTION: sqs
+          SQS_JOB_QUEUE_ARN: !GetAtt JobQueue.Arn
+          SQS_PREFIX: !Sub 'https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}'
+          SQS_QUEUE: !GetAtt JobQueue.QueueName
       Events:
         # The function will match all HTTP URLs
         LaravelRootApi:

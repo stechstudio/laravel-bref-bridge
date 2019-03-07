@@ -110,6 +110,18 @@ return [
             // Array
             'SESSION_DRIVER',
 
+            // We will make this `sqs`
+            'QUEUE_CONNECTION',
+
+            // Set by Cloudformation `!GetAtt JobQueue.Arn`
+            'SQS_JOB_QUEUE_ARN',
+
+            // Set by Cloudformation `!Sub 'https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}'`
+            'SQS_PREFIX',
+
+            // Set by Cloudformation `!GetAtt JobQueue.QueueName`
+            'SQS_QUEUE',
+
             /*
             |--------------------------------------------------------------------------
             | Reserved Environment Variables
