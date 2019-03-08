@@ -9,6 +9,7 @@
 namespace STS\Bref\Bridge\Services;
 
 use Bref\Runtime\PhpFpm;
+use finfo;
 use STS\AwsEvents\Events\ApiGatewayProxyRequest;
 use STS\AwsEvents\Events\Event;
 use Threaded;
@@ -71,6 +72,8 @@ class Bootstrap
      * @var PhpFpm
      */
     private $phpFpm;
+    /** @var finfo */
+    private $finfo;
 
     /**
      * Handle all the initialization here. This is where all the "cold start"
@@ -83,6 +86,7 @@ class Bootstrap
         $this->rumtimeAPI = (string) getenv('AWS_LAMBDA_RUNTIME_API');
         $this->initInvocationFetcher();
         $this->initInvocationError();
+        $this->finfo = new finfo_open(FILEINFO_MIME_TYPE, __DIR__ . '/../../config/mime.types');
     }
 
     /**
@@ -255,6 +259,24 @@ class Bootstrap
 
         // The PHP FPM Path
         if (ApiGatewayProxyRequest::supports($event)) {
+            /** @var ApiGatewayProxyRequest $event */
+            $urlPath = ltrim($event->get('path'), ['/']);
+            $path = sprintf('%s/laravel/public/%s', getenv('LAMBDA_TASK_ROOT'), $urlPath);
+            if (is_file($path)) {
+                $mimeType = $this->finfo->file($path);
+                $base64Encode = (bool) ! substr($mimeType, 0, 4) === 'text';
+
+                $this->reportResult([
+                    'isBase64Encoded' => $base64Encode,
+                    'statusCode' => 200,
+                    'headers' => ['Content-type' => $mimeType],
+                    'body' => $base64Encode ?
+                        'data:' . $mimeType . ';base64,' . base64_encode(file_get_contents($path)) :
+                        file_get_contents($path),
+                ]);
+                return;
+            }
+
             $this->phpFpm->ensureStillRunning();
             $this->reportResult($this->phpFpm->proxy($event->toArray())->toApiGatewayFormat());
             return;
