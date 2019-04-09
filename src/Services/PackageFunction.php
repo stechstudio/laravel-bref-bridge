@@ -28,8 +28,13 @@ class PackageFunction
         symlink($packagePath, storage_path('latest.zip'));
 
         $zipFiles = glob(storage_path('*.zip'));
-        $length = count($zipFiles) - config('bref.keep') + 1;
-        File::delete(array_slice($zipFiles, 0, $length));
+        $keep = config('bref.keep') + 1;
+        $count = count($zipFiles);
+        if ($count > $keep) {
+            $length = $count - $keep;
+            File::delete(array_slice($zipFiles, 0, $length));
+        }
+
         $event->info('Package at: ' . $packagePath);
         $event->info('Running the SAM Package command, generating template file.');
         $process = new Process([
