@@ -5,6 +5,8 @@ namespace STS\Bref\Bridge\Package;
 use Carbon\Carbon;
 use GisoStallenberg\FilePermissionCalculator\FilePermissionCalculator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
+use SplFileInfo;
 use STS\Bref\Bridge\Exceptions\Package;
 use Symfony\Component\Process\Process;
 use ZipArchive;
@@ -12,6 +14,7 @@ use function base_path;
 use function copy;
 use function copyFolder;
 use function rmFolder;
+use function storage_path;
 use function str_replace;
 use function strpos;
 
@@ -127,6 +130,13 @@ class Archive
             'bootstrap',
             FilePermissionCalculator::fromStringRepresentation('-r-xr-xr-x')->getDecimal()
         );
+        $phpConfig = storage_path('php/conf.d');
+        if (File::isDirectory($phpConfig)) {
+            $files = new Collection(File::allFiles($phpConfig));
+            $files->each(function (SplFileInfo $file) use (&$package, $phpConfig): void {
+                $package->addFile($file->getRealPath(), sprintf('%s/%s', $phpConfig, $file->getBasename()));
+            });
+        }
         $package->close();
         return $package->getPath();
     }
