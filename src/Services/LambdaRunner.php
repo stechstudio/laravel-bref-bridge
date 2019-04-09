@@ -12,6 +12,7 @@ use STS\Bref\Bridge\Lambda\Contracts\Application as LambdaContract;
 use STS\Bref\Bridge\Lambda\Kernel;
 use Thread;
 use Threaded;
+use function file_exists;
 use const PTHREADS_INHERIT_NONE;
 
 class LambdaRunner extends Thread
@@ -102,6 +103,10 @@ class LambdaRunner extends Thread
     {
         define('LARAVEL_START', microtime(true));
 
+        if (file_exists('/var/task/laravel/bootstrap/pre-autoload.php')) {
+            require_once '/var/task/laravel/bootstrap/pre-autoload.php';
+        }
+
         /*
         |--------------------------------------------------------------------------
         | Register The Auto Loader
@@ -117,9 +122,9 @@ class LambdaRunner extends Thread
         /**
          * Why? Because we chose not to inherit it from the parent thread.
          */
-        require __DIR__ . '/../../../../../vendor/autoload.php';
+        require '/var/task/laravel/vendor/autoload.php';
 
-        $app = require_once __DIR__ . '/../../../../../bootstrap/app.php';
+        $app = require_once '/var/task/laravel/bootstrap/app.php';
 
         $storagePath = '/tmp/storage';
         $storagePaths = [
