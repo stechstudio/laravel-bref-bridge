@@ -2,9 +2,15 @@
 
 namespace STS\Bref\Bridge\Services;
 
+use Illuminate\Support\Facades\File;
 use STS\Bref\Bridge\Events\LambdaPackageRequested;
 use STS\Bref\Bridge\Package\Archive;
 use Symfony\Component\Process\Process;
+use function array_slice;
+use function config;
+use function count;
+use function glob;
+use function storage_path;
 
 class PackageFunction
 {
@@ -20,6 +26,10 @@ class PackageFunction
             unlink(storage_path('latest.zip'));
         }
         symlink($packagePath, storage_path('latest.zip'));
+
+        $zipFiles = glob(storage_path('*.zip'));
+        $length = count($zipFiles) - config('bref.keep') + 1;
+        File::delete(array_slice($zipFiles, 0, $length));
         $event->info('Package at: ' . $packagePath);
         $event->info('Running the SAM Package command, generating template file.');
         $process = new Process([
