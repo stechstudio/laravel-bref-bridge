@@ -133,8 +133,8 @@ class Archive
         $phpConfig = storage_path('php/conf.d');
         if (File::isDirectory($phpConfig)) {
             $files = new Collection(File::allFiles($phpConfig));
-            $files->each(function (SplFileInfo $file) use (&$package, $phpConfig): void {
-                $package->addFile($file->getRealPath(), sprintf('%s/%s', $phpConfig, $file->getBasename()));
+            $files->each(function (SplFileInfo $file) use (&$package): void {
+                $package->addFile($file->getRealPath(), sprintf('php/conf.d/%s', $file->getBasename()));
             });
         }
         $package->close();
