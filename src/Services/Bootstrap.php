@@ -87,7 +87,7 @@ class Bootstrap
         $this->rumtimeAPI = (string) getenv('AWS_LAMBDA_RUNTIME_API');
         $this->initInvocationFetcher();
         $this->initInvocationError();
-        $this->finfo = finfo_open(FILEINFO_MIME_TYPE, __DIR__ . '/../../config/mime.types');
+        $this->finfo = finfo_open(FILEINFO_MIME_TYPE);
     }
 
     /**
