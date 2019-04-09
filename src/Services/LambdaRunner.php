@@ -121,6 +121,26 @@ class LambdaRunner extends Thread
 
         $app = require_once __DIR__ . '/../../../../../bootstrap/app.php';
 
+        $storagePath = '/tmp/storage';
+        $storagePaths = [
+            '/app/public',
+            '/framework/cache/data',
+            '/framework/sessions',
+            '/framework/testing',
+            '/framework/views',
+            '/logs',
+        ];
+
+        // Only make the dirs if we have not previously made them
+        if (! is_dir($storagePath . end($storagePaths))) {
+            reset($storagePaths);
+            foreach ($storagePaths as $path) {
+                mkdir($storagePath . $path, 0777, true);
+            }
+        }
+
+        $app->useStoragePath($storagePath);
+
         /*
         |--------------------------------------------------------------------------
         | Run The Artisan Application
