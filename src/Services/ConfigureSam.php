@@ -47,6 +47,7 @@ class ConfigureSam
             $variableNames = $dot->getEnvironmentVariableNames();
         }
         $ignoredVariables = config('bref.env.ignore');
+
         foreach ($variableNames as $variableName) {
             // These are hard coded, global settings. Ignore them in the .env file.
             // You can always edit template.yml yourself if you want to modify them.

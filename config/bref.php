@@ -121,9 +121,6 @@ return [
             // True
             'BREF_LAMBDA_ENV',
 
-            // stderr (ensures everything logs into cloudwatch)
-            'LOG_CHANNEL',
-
             // file (because, what else really makes sense?
             'CACHE_DRIVER',
 

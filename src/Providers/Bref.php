@@ -139,12 +139,7 @@ class Bref extends ServiceProvider
      */
     public function handlePublishing(): void
     {
-        // helps deal with Lumen vs Laravel differences
-        if (function_exists('config_path')) {
-            $publishConfigPath = config_path('bref.php');
-        } else {
-            $publishConfigPath = base_path('config/bref.php');
-        }
+        $publishConfigPath = config_path('bref.php');
 
         $this->publishes([$this->configPath => $publishConfigPath], 'bref-configuration');
         $this->publishes([$this->routesPath => base_path('routes/lambda.example.php')], 'bref-routes');
@@ -188,9 +183,6 @@ class Bref extends ServiceProvider
      */
     public function register(): void
     {
-        if (is_a($this->app, 'Laravel\Lumen\Application')) {
-            $this->app->configure('bref');
-        }
         $this->app->singleton(
             Registrar::class,
             Router::class
@@ -198,7 +190,6 @@ class Bref extends ServiceProvider
 
         $this->app->alias(Registrar::class, 'bref.lambda.router');
 
-        $this->mergeConfigFrom($this->configPath, 'bref');
         $this->commands($this->commandList);
     }
 }
