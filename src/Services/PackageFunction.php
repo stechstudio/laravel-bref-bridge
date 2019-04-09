@@ -27,13 +27,7 @@ class PackageFunction
         }
         symlink($packagePath, storage_path('latest.zip'));
 
-        $zipFiles = glob(storage_path('*.zip'));
-        $keep = config('bref.keep') + 1;
-        $count = count($zipFiles);
-        if ($count > $keep) {
-            $length = $count - $keep;
-            File::delete(array_slice($zipFiles, 0, $length));
-        }
+        $this->rotatePackages();
 
         $event->info('Package at: ' . $packagePath);
         $event->info('Running the SAM Package command, generating template file.');
@@ -52,5 +46,16 @@ class PackageFunction
             echo $data;
         }
         $event->info('Packaging Complete');
+    }
+
+    protected function rotatePackages(): void
+    {
+        $zipFiles = glob(storage_path('*.zip'));
+        $keep = config('bref.keep') + 1;
+        $count = count($zipFiles);
+        if ($count > $keep) {
+            $length = $count - $keep;
+            File::delete(array_slice($zipFiles, 0, $length));
+        }
     }
 }
