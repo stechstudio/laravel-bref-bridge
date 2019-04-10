@@ -82,7 +82,7 @@ return [
     | Keep
     |--------------------------------------------------------------------------
     |
-    | The number of latest packages to keep on the filesystem.
+    | The number of latest (zip) packages to keep on the filesystem.
     |
     */
     'keep' => env('BREF_PACKAGE_KEEP', 3),
@@ -116,16 +116,6 @@ return [
             ],
         ],
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Keep
-    |--------------------------------------------------------------------------
-    |
-    | The number of latest packages to keep on the filesystem.
-    |
-    */
-    'keep' => 3,
 
     /*
     |--------------------------------------------------------------------------
