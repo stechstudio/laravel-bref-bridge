@@ -34,8 +34,8 @@ class ConfigureSam
     protected function setFunctionName(string $functionName): void
     {
         $this->config['Resources']['LaravelFunction']['Properties']['FunctionName'] = $functionName;
-        $this->config['Resources']['JobQueue']['Properties']['QueueName'] = 'JobQueue' . $functionName;
-        $this->config['Resources']['LaravelFunctionExecutionRole']['Properties']['RoleName'] = 'FunctionRole' . $functionName;
+        $this->config['Resources']['JobQueue']['Properties']['QueueName'] = 'job-queue-' . $functionName;
+        $this->config['Resources']['LaravelFunctionExecutionRole']['Properties']['RoleName'] = 'function-role-' . $functionName;
     }
 
     /**
@@ -46,17 +46,27 @@ class ConfigureSam
      */
     protected function setEnvironmentVariables(array $variableNames = []): void
     {
-        if (empty($variables)) {
+        /* First, load up the variable from the .env file */
+        $this->fromDotEnv($variableNames);
+
+        /* Then load up (and overwrite DotEnv) required variables from Config */
+        foreach (config('bref.env.required', []) as $name => $value) {
+            $this->config['Resources']['LaravelFunction']['Properties']['Environment']['Variables'][$name] = $value;
+        }
+    }
+
+    protected function fromDotEnv(array $variableNames): void
+    {
+        if (empty($variableNames)) {
             $dot = Dotenv::create(base_path());
             $dot->load();
             $variableNames = $dot->getEnvironmentVariableNames();
         }
-        $ignoredVariables = config('bref.env.ignore');
 
         foreach ($variableNames as $variableName) {
             // These are hard coded, global settings. Ignore them in the .env file.
             // You can always edit template.yml yourself if you want to modify them.
-            if (in_array_icase($variableName, $ignoredVariables)) {
+            if (in_array_icase($variableName, config('bref.env.env_file_ignore'))) {
                 continue;
             }
             $this->config['Resources']['LaravelFunction']['Properties']['Environment']['Variables'][$variableName] = (string) env(

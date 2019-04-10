@@ -20,14 +20,6 @@ Resources:
         - 'arn:aws:lambda:us-east-1:209497400698:layer:php-73-fpm:2'
       Environment:
         Variables:
-          # Laravel environment variables
-          # @todo: Should probably make these configurable in config/bref.php file
-          APP_STORAGE: '/tmp'     # The only thing we can write to in Lambda
-          BREF_LAMBDA_ENV: true   # Make it easy to determine we are running in Lambda. Use `runningInLambda()` helper.
-          LOG_CHANNEL: stderr     # Log to stderr so that everything goes to cloudwatch.
-          CACHE_DRIVER: file
-          SESSION_DRIVER: array
-          QUEUE_CONNECTION: sqs
           SQS_JOB_QUEUE_ARN: !GetAtt JobQueue.Arn
           SQS_PREFIX: !Sub 'https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}'
           SQS_QUEUE: !GetAtt JobQueue.QueueName

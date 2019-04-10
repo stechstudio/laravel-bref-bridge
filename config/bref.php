@@ -168,30 +168,33 @@ return [
     ],
     /*
     |--------------------------------------------------------------------------
-    | Ignored .env Variables
+    | Function Environment Variables
     |--------------------------------------------------------------------------
     |
-    | This value is the name of your Lambda. This value is used when the
-    | framework needs to generate the lambda function names.
+    | Environment variables that are accessible from
+    | function code during execution.
     |
     */
     'env' => [
-        'ignore' => [
-            // Hardcoded to 'tmp'
-            'APP_STORAGE',
-
-            // True
-            'BREF_LAMBDA_ENV',
-
-            // file (because, what else really makes sense?
-            'CACHE_DRIVER',
-
-            // Array
-            'SESSION_DRIVER',
-
-            // We will make this `sqs`
-            'QUEUE_CONNECTION',
-
+        /**
+         * These are values that are required to be set. There are sane defaults,
+         * but you can override them in your .env
+         */
+        'required' => [
+            'APP_STORAGE' => env('BREF_APP_STORAGE', '/tmp/storage'),
+            /* Make it easy to determine we are running in Lambda. Use `runningInLambda()` helper. */
+            'BREF_LAMBDA_ENV' => true,
+            /* Log to stderr so that everything goes to cloudwatch. */
+            'LOG_CHANNEL' => env('BREF_LOG_CHANNEL', 'stderr'),
+            'CACHE_DRIVER' => env('BREF_CACHE_DRIVER', 'file'),
+            'SESSION_DRIVER' => env('BREF_SESSION_DRIVER', 'array'),
+            'QUEUE_CONNECTION' => env('BREF_QUEUE_CONNECTION', 'sqs'),
+        ],
+        /**
+         * These are values that are completely ignored from the .env file.
+         * Remove them from this list to enable them.
+         */
+        'env_file_ignore' => [
             // Set by Cloudformation `!GetAtt JobQueue.Arn`
             'SQS_JOB_QUEUE_ARN',
 
