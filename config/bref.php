@@ -21,7 +21,7 @@ return [
     | framework needs to generate the lambda function descriptions.
     |
     */
-    'name' => env('BREF_DESCRIPTION', ''),
+    'description' => env('BREF_DESCRIPTION', ''),
 
     /*
     |--------------------------------------------------------------------------
