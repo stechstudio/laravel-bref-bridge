@@ -36,7 +36,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Bref Lambda Timeout
+    | Bref Function Timeout
     |--------------------------------------------------------------------------
     |
     | This value is the timeout, in seconds, to configure the lambda function
@@ -44,6 +44,18 @@ return [
     |
     */
     'timeout' => env('BREF_FUNCTION_TIMEOUT', 30),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Bref Function Memory Size
+    |--------------------------------------------------------------------------
+    |
+    | The amount of memory that your function has access to. Increasing the
+    | function's memory also increases it's CPU allocation. The default
+    | value is 128 MB. The value must be an integer multiple of 64 MB.
+    |
+    */
+    'memory_size' => env('BREF_FUNCTION_MEMORY_SIZE', 3008),
 
     /*
     |--------------------------------------------------------------------------
