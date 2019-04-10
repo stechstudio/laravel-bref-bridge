@@ -41,6 +41,7 @@ return [
     |
     | This value is the timeout, in seconds, to configure the lambda function
     | for. The API Gateway timeout is 30 seconds, so that is our default.
+    | The maximum timeout is 900 seconds (15 minutes).
     |
     */
     'timeout' => env('BREF_FUNCTION_TIMEOUT', 30),
