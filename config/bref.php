@@ -53,7 +53,8 @@ return [
     |
     | The amount of memory that your function has access to. Increasing the
     | function's memory also increases it's CPU allocation. The default
-    | value is 128 MB. The value must be an integer multiple of 64 MB.
+    | value is 128 MB and the maximum value is 3,008 MB. The value
+    | must be an integer multiple of 64 MB.
     |
     */
     'memory_size' => env('BREF_FUNCTION_MEMORY_SIZE', 3008),
