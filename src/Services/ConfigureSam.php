@@ -6,6 +6,7 @@ use Dotenv\Dotenv;
 use STS\Bref\Bridge\Events\SamConfigurationRequested;
 use Symfony\Component\Yaml\Yaml;
 use function base_path;
+use function config;
 
 class ConfigureSam
 {
@@ -19,6 +20,7 @@ class ConfigureSam
     {
         $this->config = Yaml::parseFile(base_path('template.yaml'), Yaml::PARSE_CUSTOM_TAGS);
         $this->setFunctionName(config('bref.name'));
+        $this->config['Resources']['LaravelFunction']['Properties']['FunctionName'] = config('bref.description');
         $this->setEnvironmentVariables();
         file_put_contents(base_path('template.yaml'), Yaml::dump($this->config, 10, 4));
     }

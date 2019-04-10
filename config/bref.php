@@ -14,6 +14,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Bref Description
+    |--------------------------------------------------------------------------
+    |
+    | This value is the description of your Lambda. This value is used when the
+    | framework needs to generate the lambda function descriptions.
+    |
+    */
+    'name' => env('BREF_DESCRIPTION', ''),
+
+    /*
+    |--------------------------------------------------------------------------
     | Bref Region
     |--------------------------------------------------------------------------
     |
@@ -22,6 +33,16 @@ return [
     |
     */
     'region' => env('BREF_DEFAULT_REGION', env('AWS_DEFAULT_REGION')),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Keep
+    |--------------------------------------------------------------------------
+    |
+    | The number of latest packages to keep on the filesystem.
+    |
+    */
+    'keep' => env('BREF_PACKAGE_KEEP', 3),
 
     /*
     |--------------------------------------------------------------------------

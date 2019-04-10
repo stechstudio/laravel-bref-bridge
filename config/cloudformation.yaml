@@ -9,6 +9,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: 'laravel'
+      Description: 'laravel function description'
       CodeUri: ./storage/latest.zip
       Handler: laravel/public/index.php
       Timeout: 30 # in seconds (API Gateway has a timeout of 30 seconds)
@@ -90,7 +91,7 @@ Resources:
 
 Outputs:
   LaravelFunctionApi:
-    Description: 'URL of our function in the *Prod* environment'
+    Description: 'URL of our function in the Gateway API *Prod* environment'
     Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
   JobQueueName:
     Description: 'Name of our Job Queue'
