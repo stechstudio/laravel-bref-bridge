@@ -13,6 +13,7 @@ use finfo;
 use STS\AwsEvents\Events\ApiGatewayProxyRequest;
 use STS\AwsEvents\Events\Event;
 use Threaded;
+use function array_key_exists;
 use function finfo_open;
 use const PTHREADS_INHERIT_NONE;
 
@@ -317,8 +318,9 @@ class Bootstrap
     public function reportResult(array $response): void
     {
         self::consoleLog('reportResult');
-        // Initialize a new cURL resource for reporting.
         $this->initInvocationResult();
+
+        $endpoint = $this->isErrorResponse($response) ? 'error' : 'response';
 
         // Now we can encode everything.
         $response_json = json_encode($response);
@@ -328,9 +330,10 @@ class Bootstrap
             $this->result,
             CURLOPT_URL,
             sprintf(
-                'http://%s/2018-06-01/runtime/invocation/%s/response',
+                'http://%s/2018-06-01/runtime/invocation/%s/%s',
                 $this->rumtimeAPI,
-                $this->requestId
+                $this->requestId,
+                $endpoint
             )
         );
         curl_setopt($this->result, CURLOPT_POSTFIELDS, $response_json);
@@ -355,6 +358,11 @@ class Bootstrap
         $this->result = curl_init();
         curl_setopt($this->result, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($this->result, CURLOPT_RETURNTRANSFER, true);
+    }
+
+    protected function isErrorResponse(array $response): bool
+    {
+        return array_key_exists('bref_status', $response) && $response['bref_status'] === 'error';
     }
 
     /**
