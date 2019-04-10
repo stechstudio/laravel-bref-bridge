@@ -59,6 +59,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Bref Function Layers
+    |--------------------------------------------------------------------------
+    |
+    | A list of function layers to add to the function's execution environment.
+    | Specify each layer by ARN, including the version, in the order they
+    | should be layered, with a maximum of five layers.
+    |
+    */
+    'layers' => array_filter([
+        0 => env('BREF_FUNCTION_LAYER_1', 'arn:aws:lambda:us-east-1:209497400698:layer:php-73-fpm:2'),
+        1 => env('BREF_FUNCTION_LAYER_2'),
+        2 => env('BREF_FUNCTION_LAYER_3'),
+        3 => env('BREF_FUNCTION_LAYER_4'),
+        4 => env('BREF_FUNCTION_LAYER_5'),
+    ]),
+
+    /*
+    |--------------------------------------------------------------------------
     | Keep
     |--------------------------------------------------------------------------
     |

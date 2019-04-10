@@ -23,6 +23,7 @@ class ConfigureSam
         $this->config['Resources']['LaravelFunction']['Properties']['FunctionName'] = config('bref.description');
         $this->config['Resources']['LaravelFunction']['Properties']['Timeout'] = config('bref.timeout');
         $this->config['Resources']['LaravelFunction']['Properties']['MemorySize'] = config('bref.memory_size');
+        $this->config['Resources']['LaravelFunction']['Properties']['Layers'] = config('bref.layers');
         $this->setEnvironmentVariables();
         file_put_contents(base_path('template.yaml'), Yaml::dump($this->config, 10, 4));
     }
