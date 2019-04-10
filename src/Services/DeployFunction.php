@@ -2,6 +2,7 @@
 
 namespace STS\Bref\Bridge\Services;
 
+use Illuminate\Support\Facades\Log;
 use STS\Bref\Bridge\Events\DeploymentRequested;
 use Symfony\Component\Process\Process;
 
@@ -19,6 +20,7 @@ class DeployFunction
             '--stack-name',
             config('bref.name'),
         ]);
+        Log::info($process->getCommandLine());
         $process->setWorkingDirectory(base_path());
         $process->setTimeout(600);
         $process->start();

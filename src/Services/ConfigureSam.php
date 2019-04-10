@@ -46,7 +46,8 @@ class ConfigureSam
         if (config('bref.timeout') > 900) {
             throw new InvalidArgumentException('The bref timeout can not exceed 900 seconds (15 minutes).');
         }
-        $this->config['Resources']['LaravelFunction']['Properties']['Timeout'] = config('bref.timeout');
+        $this->config['Resources']['LaravelFunction']['Properties']['Timeout'] = (int) config('bref.timeout');
+        $this->config['Resources']['JobQueue']['Properties']['VisibilityTimeout'] = (int) config('bref.timeout');
     }
 
     protected function setFunctionMemorySize(): void
@@ -54,7 +55,7 @@ class ConfigureSam
         if (config('bref.memory_size') % 64 !== 0 || config('bref.memory_size') < 128) {
             throw new InvalidArgumentException('The bref memory size must be between 128 MB to 3,008 MB, in 64 MB increments..');
         }
-        $this->config['Resources']['LaravelFunction']['Properties']['MemorySize'] = config('bref.memory_size');
+        $this->config['Resources']['LaravelFunction']['Properties']['MemorySize'] = (int) config('bref.memory_size');
     }
 
     protected function setFunctionLayers(): void
@@ -89,14 +90,14 @@ class ConfigureSam
             $dot->load();
             $variableNames = $dot->getEnvironmentVariableNames();
         }
-
+        $ignoredList = config('bref.env.env_file_ignore');
         foreach ($variableNames as $variableName) {
             // These are hard coded, global settings. Ignore them in the .env file.
             // You can always edit template.yml yourself if you want to modify them.
-            if (in_array_icase($variableName, config('bref.env.env_file_ignore'))) {
+            if (in_array_icase($variableName, $ignoredList)) {
                 continue;
             }
-            $this->config['Resources']['LaravelFunction']['Properties']['Environment']['Variables'][$variableName] = (string) env(
+            $this->config['Resources']['LaravelFunction']['Properties']['Environment']['Variables'][$variableName] = env(
                 $variableName,
                 ''
             );

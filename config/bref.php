@@ -44,7 +44,7 @@ return [
     | The maximum timeout is 900 seconds (15 minutes).
     |
     */
-    'timeout' => env('BREF_FUNCTION_TIMEOUT', 30),
+    'timeout' => (int) env('BREF_FUNCTION_TIMEOUT', 30),
 
     /*
     |--------------------------------------------------------------------------
@@ -57,7 +57,7 @@ return [
     | must be an integer multiple of 64 MB.
     |
     */
-    'memory_size' => env('BREF_FUNCTION_MEMORY_SIZE', 3008),
+    'memory_size' => (int) env('BREF_FUNCTION_MEMORY_SIZE', 3008),
 
     /*
     |--------------------------------------------------------------------------
@@ -85,7 +85,7 @@ return [
     | The number of latest (zip) packages to keep on the filesystem.
     |
     */
-    'keep' => env('BREF_PACKAGE_KEEP', 3),
+    'keep' => (int) env('BREF_PACKAGE_KEEP', 3),
 
     /*
     |--------------------------------------------------------------------------

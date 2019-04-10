@@ -80,6 +80,7 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: Laravel_Job_Queue
+      DelaySeconds: 30
 
 Outputs:
   LaravelFunctionApi:

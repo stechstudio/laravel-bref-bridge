@@ -11,6 +11,7 @@ namespace STS\Bref\Bridge\Console;
 use Aws\CloudFormation\CloudFormationClient;
 use Illuminate\Console\Command;
 use STS\Bref\Bridge\Events\DeploymentRequested;
+use function is_array;
 
 class Deploy extends Command
 {
@@ -42,7 +43,9 @@ class Deploy extends Command
 
 
         $outputs = $result->search('Stacks[0].Outputs');
-
+        if ($outputs === null || ! is_array($outputs)) {
+            return 1;
+        }
         $this->output->writeln('<fg=yellow>*****************************</>');
         foreach ($outputs as $output) {
             $this->output->writeln(
