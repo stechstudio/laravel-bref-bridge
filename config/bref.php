@@ -36,6 +36,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Bref Lambda Timeout
+    |--------------------------------------------------------------------------
+    |
+    | This value is the timeout, in seconds, to configure the lambda function
+    | for. The API Gateway timeout is 30 seconds, so that is our default.
+    |
+    */
+    'timeout' => env('BREF_FUNCTION_TIMEOUT', 30),
+
+    /*
+    |--------------------------------------------------------------------------
     | Keep
     |--------------------------------------------------------------------------
     |
