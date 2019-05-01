@@ -92,6 +92,7 @@ class Application implements LambdaContract
         try {
             $this->currentEvent = Event::fromString($event);
             $this->app->instance(Eventful::class, $this->currentEvent);
+            $this->app->alias(Eventful::class, 'bref.lambda.event');
         } catch (\Throwable $t) {
             Log::error('Failed to convert event string to an event object.');
             throw $this->logThrowables($t);
@@ -100,6 +101,7 @@ class Application implements LambdaContract
         try {
             $this->currentContext = Context::fromJson($context);
             $this->app->instance(Context::class, $this->currentContext);
+            $this->app->alias(Context::class, 'bref.lambda.context');
         } catch (\Throwable $t) {
             Log::error('Failed to convert context string to an context object.');
             throw $this->logThrowables($t);
