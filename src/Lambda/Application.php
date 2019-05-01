@@ -11,6 +11,7 @@ namespace STS\Bref\Bridge\Lambda;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\Log;
 use STS\AwsEvents\Contexts\Context;
+use STS\AwsEvents\Contracts\Eventful;
 use STS\AwsEvents\Events\Event;
 use STS\Bref\Bridge\Events\LambdaRunning;
 use STS\Bref\Bridge\Events\LambdaStarting;
@@ -87,8 +88,10 @@ class Application implements LambdaContract
     public function run(string $event, string $context): array
     {
         $this->laravelEventDispatcher->dispatch(new LambdaRunning($this));
+
         try {
             $this->currentEvent = Event::fromString($event);
+            $this->app->instance(Eventful::class, $this->currentEvent);
         } catch (\Throwable $t) {
             Log::error('Failed to convert event string to an event object.');
             throw $this->logThrowables($t);
@@ -96,6 +99,7 @@ class Application implements LambdaContract
 
         try {
             $this->currentContext = Context::fromJson($context);
+            $this->app->instance(Context::class, $this->currentContext);
         } catch (\Throwable $t) {
             Log::error('Failed to convert context string to an context object.');
             throw $this->logThrowables($t);
