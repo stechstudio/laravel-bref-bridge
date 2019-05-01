@@ -696,3 +696,15 @@ After a few moments, the job will finish and you can head over to the AWS Consol
 
 That was it, Congratulations!
 
+# Configuration Options
+The `config/bref.php` file holds our configuration options for us. This is a high level overview of the available settings. Please see comments in the file itself for more detail and defaults.
+ * **name** - This value is the name of your Lambda. This value is used when the framework needs to generate the lambda function names.
+ * **description** - This value is the description of your Lambda. This value is used when the framework needs to generate the lambda function descriptions.
+ * **region** - This value is the region of your Lambda. This value is used when the framework needs to generate the lambda function regions.
+ * **timeout** - This value is the timeout, in seconds, to configure the lambda function for. The API Gateway timeout is 30 seconds, so that is our default.  The maximum timeout is 900 seconds (15 minutes).
+ * **memory_size** - The amount of memory that your function has access to. Increasing the function's memory also increases it's CPU allocation. The default value is 128 MB and the maximum value is 3,008 MB. The value must be an integer multiple of 64 MB.
+ * **layers** - A list of function layers to add to the function's execution environment. Specify each layer by ARN, including the version, in the order they should be layered, with a maximum of five layers.
+ * **keep** - The number of latest (zip) packages to keep on the filesystem.
+ * **sqs** - Lambda consumption of job queues gets configured here. Publishing jobs to queues still works as normal, So no changes there. Just update the .env
+ * **packaging** - This array configures the files that should be ignored when packaging your application, as well as identifying executable files.
+ * **env** - This array configures environment variables that are passed in for function code, as well as listing those that are ignored.
