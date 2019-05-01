@@ -708,3 +708,22 @@ The `config/bref.php` file holds our configuration options for us. This is a hig
  * **sqs** - Lambda consumption of job queues gets configured here. Publishing jobs to queues still works as normal, So no changes there. Just update the .env
  * **packaging** - This array configures the files that should be ignored when packaging your application, as well as identifying executable files.
  * **env** - This array configures environment variables that are passed in for function code, as well as listing those that are ignored.
+
+# .env Variables
+The following `.env` variables are available to be used. Reference the `config/bref.php` for more details.
+ * **BREF_NAME** - This value is the name of your Lambda. This value is used when the framework needs to generate the lambda function names.
+ * **BREF_DESCRIPTION** - This value is the description of your Lambda. This value is used when the framework needs to generate the lambda function descriptions.
+ * **BREF_DEFAULT_REGION** - This value is the region of your Lambda. This value is used when the framework needs to generate the lambda function regions.
+ * **BREF_FUNCTION_TIMEOUT** - This value is the timeout, in seconds, to configure the lambda function for. The API Gateway timeout is 30 seconds, so that is our default. The maximum timeout is 900 seconds (15 minutes).
+ * **BREF_FUNCTION_MEMORY_SIZE** -The amount of memory that your function has access to. Increasing the function's memory also increases it's CPU allocation. The default value is 128 MB and the maximum value is 3,008 MB. The value must be an integer multiple of 64 MB.
+ * **BREF_FUNCTION_LAYER_1** - The ARN, including version, of the first layer. This will override the default layer. 
+ * **BREF_FUNCTION_LAYER_2** - The ARN, including version, of the second layer, if used.
+ * **BREF_FUNCTION_LAYER_3** - The ARN, including version, of the third layer, if used.
+ * **BREF_FUNCTION_LAYER_4** - The ARN, including version, of the fourth layer, if used.
+ * **BREF_FUNCTION_LAYER_5** - The ARN, including version, of the fifth layer, if used.
+ * **BREF_PACKAGE_KEEP** - The number of latest (zip) packages to keep on the filesystem.
+ * **BREF_APP_STORAGE** - Where the laravel app storage should be. Defaults to `/tmp/storage`.
+ * **BREF_LOG_CHANNEL** - How to handle logging in lambda. Defaults to `stderr`.
+ * **BREF_CACHE_DRIVER** - The cache driver to use in Lambda. Defaults to `file`.
+ * **BREF_SESSION_DRIVER** - The Session driver to use in Lambda. Defaults to `array`.
+ * **BREF_QUEUE_CONNECTION** - The queue connection to use in Lambda. Defaults to `sqs`.
