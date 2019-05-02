@@ -47,7 +47,16 @@ New edit your `.env` file and add:
 BREF_NAME="<my-lambdas-name>"
 BREF_S3_BUCKET="<bucket-name>"
 ```
+#### Region Layers
+While there is a default us-east-1 layer configured for you, it is best to reference https://bref.sh/docs/runtimes/ and find the ARN for the latest bref layer in the region you intend to deploy your lambda function.
 
+Note that when you select the base layer, we require one of the **php-??-fpm** layers. Neither the **php-??** nor the **console** layer types are compatible with this bridge.
+
+Ensure that the region and the layer match, like so:
+```ini
+BREF_DEFAULT_REGION=ap-southeast-1
+BREF_FUNCTION_LAYER_1=arn:aws:lambda:ap-southeast-1:209497400698:layer:php-73-fpm:6
+```
 
 ### SQS Job Queue
 We will report the created default Job Queue after deployment. The Function will be configured to receive events from it as well as write to it. This means that when you dispatch a job to the default queue, it will trigger the same lambda function to handle the job.
