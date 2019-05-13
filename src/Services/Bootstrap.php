@@ -262,7 +262,7 @@ class Bootstrap
         // The PHP FPM Path
         if (ApiGatewayProxyRequest::supports($event)) {
             /** @var ApiGatewayProxyRequest $event */
-            $urlPath = ltrim($event->get('path'), ['/']);
+            $urlPath = ltrim($event->get('path'), '/');
             $path = sprintf('%s/laravel/public/%s', getenv('LAMBDA_TASK_ROOT'), $urlPath);
             if (is_file($path)) {
                 $mimeType = $this->finfo->file($path);
