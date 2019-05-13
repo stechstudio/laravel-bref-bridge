@@ -736,3 +736,17 @@ The following `.env` variables are available to be used. Reference the `config/b
  * **BREF_CACHE_DRIVER** - The cache driver to use in Lambda. Defaults to `file`.
  * **BREF_SESSION_DRIVER** - The Session driver to use in Lambda. Defaults to `array`.
  * **BREF_QUEUE_CONNECTION** - The queue connection to use in Lambda. Defaults to `sqs`.
+
+# Enable an Extension
+If you would like to enable an extension, of simply modify the php.ini directives, you can do so by creating a `./storage/php/conf.d` directory. 
+Anything you place in that directory will get packaged to end up in `/var/task/php/config.d` which is the default for bref.
+
+For example, to enable `pdo_mysql`, which comes in the base bref layer, just create a `./storage/php/conf.d/mysql.ini` file like so:
+
+```ini
+extension=pdo_mysql
+```
+
+See: 
+https://bref.sh/docs/environment/php.html#customizing-phpini
+https://bref.sh/docs/environment/php.html#extensions-installed-but-disabled-by-default
