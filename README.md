@@ -11,10 +11,10 @@ Assuming your are in existing Laravel project, let's install the bridge via Comp
 $ composer require stechstudio/laravel-bref-bridge
 ```
 
-There is a route and AWS SAM template that needs to be published.
+There is a route, config file, and AWS SAM template that needs to be published.
 
 ```
-$ artisan vendor:publish --tag=bref-routes --tag=bref-sam-template
+$ artisan vendor:publish --tag=bref-routes --tag=bref-sam-template --tag=bref-configuration
 ```
 
 ## Configuration
@@ -26,7 +26,7 @@ BREF_S3_BUCKET="<bucket-name>"
 ```
 
 ```sh
-$ artisan vendor:publish --tag=bref-sam-template
+$ artisan vendor:publish --tag=bref-sam-template --tag=bref-configuration
 $ artisan bref:config-sam
 $ artisan vendor:publish --tag=bref-routes
 $ mv routes/lambda.example.php routes/lambda.php
