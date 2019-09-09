@@ -10,9 +10,9 @@ namespace STS\Bref\Bridge\Lambda\Queue;
 
 use Aws\Credentials\Credentials;
 use Aws\Sqs\SqsClient;
+use Illuminate\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Queue\QueueManager;
 use Illuminate\Queue\Worker as IlluminateQueWorker;
 use Illuminate\Queue\WorkerOptions;
@@ -25,7 +25,7 @@ class Worker extends IlluminateQueWorker
     protected $options;
     /** @var Credentials */
     protected $credentials;
-    /** @var /Illuminate\Container\Container */
+    /** @var Container */
     private $app;
     /** @var SqsClient */
     private $sqs;
@@ -39,7 +39,7 @@ class Worker extends IlluminateQueWorker
         QueueManager $manager,
         Dispatcher $events,
         ExceptionHandler $exceptions,
-        Application $app,
+        Container $app,
         ?callable $isDownForMaintenance = null
     ) {
 
