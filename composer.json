@@ -22,6 +22,9 @@
     "ext-tokenizer": "*",
     "symfony/yaml": "^4.2",
     "bref/bref": "^0.3.4",
+    "illuminate/http": "^6.0",
+    "illuminate/support": "^6.0",
+    "laravel/framework": "^6.0",
     "psr/http-server-handler": "^1.0",
     "stechstudio/aws-events": "^1.0",
     "symfony/psr-http-message-bridge": "^1.1",
@@ -29,10 +32,7 @@
   },
   "require-dev": {
     "phpstan/phpstan": "^0.11.2",
-    "phpstan/phpstan-doctrine": "^0.11.1",
-    "illuminate/http": "^5.8",
-    "illuminate/support": "^5.8",
-    "laravel/framework": "^5.8"
+    "phpstan/phpstan-doctrine": "^0.11.1"
   },
   "autoload": {
     "psr-4": {
