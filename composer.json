@@ -20,6 +20,7 @@
     "ext-mbstring": "*",
     "ext-simplexml": "*",
     "ext-tokenizer": "*",
+    "ext-parallel": "*",
     "symfony/yaml": "^4.2",
     "bref/bref": "^0.3.4",
     "illuminate/http": "^6.0",
