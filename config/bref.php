@@ -72,7 +72,8 @@ return [
     'layers'      => array_filter([
         0 => env('BREF_FUNCTION_LAYER_1',
             'arn:aws:lambda:us-east-1:209497400698:layer:php-73-fpm:11'),
-        1 => env('BREF_FUNCTION_LAYER_2'),
+        1 => env('BREF_FUNCTION_LAYER_2',
+            'arn:aws:lambda:us-east-1:965741605173:layer:sts-bref-extensions:3'),
         2 => env('BREF_FUNCTION_LAYER_3'),
         3 => env('BREF_FUNCTION_LAYER_4'),
         4 => env('BREF_FUNCTION_LAYER_5'),
