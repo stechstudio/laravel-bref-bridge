@@ -15,9 +15,7 @@ parameters:
   ignoreErrors:
     # Ignore Laravel Magic Call
     - '#Call to.*Illuminate.*#'
-    - '#Call to.*Laravel.*#'
+    - '#Cannot call method file() on resource|false.#'
     - '#Cannot access offset .STS..Bref..Bridge…. on Illuminate.Contracts.Foundation.Application.#'
     - '#Cannot access offset .Illuminate…. on Illuminate.Contracts.Foundation.Application.#'
-    - '#Cannot access an offset on Threaded.#'
-    - '#Cannot assign new offset to Threaded.#'
     # Ignore other PHP Dark Magic

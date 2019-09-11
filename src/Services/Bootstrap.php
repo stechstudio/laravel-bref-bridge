@@ -9,13 +9,13 @@
 namespace STS\Bref\Bridge\Services;
 
 use Bref\Runtime\PhpFpm;
-use finfo;
+use parallel\Runtime;
 use STS\AwsEvents\Events\ApiGatewayProxyRequest;
 use STS\AwsEvents\Events\Event;
-use Threaded;
+use STS\Bref\Bridge\Lambda\Contracts\Application as LambdaContract;
+use STS\Bref\Bridge\Lambda\Kernel;
 use function array_key_exists;
 use function finfo_open;
-use const PTHREADS_INHERIT_NONE;
 
 class Bootstrap
 {
@@ -74,7 +74,7 @@ class Bootstrap
      * @var PhpFpm
      */
     private $phpFpm;
-    /** @var finfo */
+    /** @var resource|false */
     private $finfo;
 
     /**
@@ -84,7 +84,8 @@ class Bootstrap
     public function __construct()
     {
         self::consoleLog('Cold Start');
-        $this->vendorAutoload = sprintf('%s/%s', getenv('LAMBDA_TASK_ROOT'), '/laravel/vendor/autoload.php');
+        $this->vendorAutoload = sprintf('%s/%s', getenv('LAMBDA_TASK_ROOT'),
+            '/laravel/vendor/autoload.php');
         $this->rumtimeAPI = (string) getenv('AWS_LAMBDA_RUNTIME_API');
         $this->initInvocationFetcher();
         $this->initInvocationError();
@@ -105,7 +106,8 @@ class Bootstrap
      */
     protected function initInvocationFetcher(): void
     {
-        $this->next = curl_init(sprintf('http://%s/2018-06-01/runtime/invocation/next', $this->rumtimeAPI));
+        $this->next = curl_init(sprintf('http://%s/2018-06-01/runtime/invocation/next',
+            $this->rumtimeAPI));
         curl_setopt($this->next, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($this->next, CURLOPT_FAILONERROR, true);
         curl_setopt($this->next, CURLOPT_HEADERFUNCTION, [$this, 'writeHeader']);
@@ -266,7 +268,7 @@ class Bootstrap
             $path = sprintf('%s/laravel/public/%s', getenv('LAMBDA_TASK_ROOT'), $urlPath);
             if (is_file($path)) {
                 $mimeType = $this->finfo->file($path);
-                $base64Encode = (bool) ! substr($mimeType, 0, 4) === 'text';
+                $base64Encode = ! substr($mimeType, 0, 4) === 'text';
 
                 $this->reportResult([
                     'isBase64Encoded' => $base64Encode,
@@ -285,13 +287,76 @@ class Bootstrap
         }
 
         // The threaded path.
+        $autoLoader = '/var/task/laravel/vendor/autoload.php';
+
+        if (file_exists('/var/task/laravel/bootstrap/custom-autoload.php')) {
+            $autoLoader = '/var/task/laravel/bootstrap/custom-autoload.php';
+        }
+
+        $runtime = new Runtime($autoLoader);
         try {
-            $store = new Threaded;
-            $thread = new LambdaRunner($store, $this->requestBody, json_encode($this->context));
-            // Note that the thread inherits nothing from the parent,
-            // resolving any sort of contamination.
-            $thread->start(PTHREADS_INHERIT_NONE) && $thread->join();
-            $this->reportResult($store->shift());
+            $future = $runtime->run(function (): array {
+                define('LARAVEL_START', microtime(true));
+                $app = require_once '/var/task/laravel/bootstrap/app.php';
+
+                $storagePath = '/tmp/storage';
+                $storagePaths = [
+                    '/app/public',
+                    '/framework/cache/data',
+                    '/framework/sessions',
+                    '/framework/testing',
+                    '/framework/views',
+                    '/logs',
+                ];
+
+                // Only make the dirs if we have not previously made them
+                if (! is_dir($storagePath . end($storagePaths))) {
+                    reset($storagePaths);
+                    foreach ($storagePaths as $path) {
+                        mkdir($storagePath . $path, 0777, true);
+                    }
+                }
+
+                $app->useStoragePath($storagePath);
+
+                /*
+                |--------------------------------------------------------------------------
+                | Run The Artisan Application
+                |--------------------------------------------------------------------------
+                |
+                | When we run the console application, the current CLI command will be
+                | executed in this console and the response sent back to a terminal
+                | or another output device for the developers. Here goes nothing!
+                |
+                */
+
+                // Inject the Lambda Kernel
+                $app->singleton(
+                    LambdaContract::class,
+                    Kernel::class
+                );
+
+                /** @var Kernel $kernel */
+                $kernel = $app->make(LambdaContract::class);
+
+                $results = $kernel->handle($this->requestBody, json_encode($this->context));
+
+                /*
+                |--------------------------------------------------------------------------
+                | Shutdown The Application
+                |--------------------------------------------------------------------------
+                |
+                | Once Artisan has finished running, we will fire off the shutdown events
+                | so that any final work may be done by the application before we shut
+                | down the process. This is the last thing to happen to the request.
+                |
+                */
+
+                $kernel->terminate(0);
+
+                return $results;
+            }
+            );
         } catch (\Throwable $e) {
             // This is all error handling.
             self::consoleLog('ERROR: ' . $e->getMessage());

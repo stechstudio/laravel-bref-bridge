@@ -10,9 +10,9 @@ namespace STS\Bref\Bridge\Lambda\Queue;
 
 use Aws\Credentials\Credentials;
 use Aws\Sqs\SqsClient;
+use Illuminate\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Queue\QueueManager;
 use Illuminate\Queue\Worker as IlluminateQueWorker;
 use Illuminate\Queue\WorkerOptions;
@@ -25,10 +25,12 @@ class Worker extends IlluminateQueWorker
     protected $options;
     /** @var Credentials */
     protected $credentials;
-    /** @var Application */
+    /** @var Container */
     private $app;
     /** @var SqsClient */
     private $sqs;
+    /** @var string  */
+    private $connectionName = 'sqs';
 
     /**
      * Create a new queue worker.
@@ -37,13 +39,19 @@ class Worker extends IlluminateQueWorker
         QueueManager $manager,
         Dispatcher $events,
         ExceptionHandler $exceptions,
-        Application $app
+        Container $app,
+        ?callable $isDownForMaintenance = null
     ) {
-        parent::__construct($manager, $events, $exceptions);
 
         $this->app = $app;
+        if ($isDownForMaintenance === null){
+            $isDownForMaintenance = function () {
+                return $this->app->isDownForMaintenance();
+            };
+        }
 
-        $this->connectionName = 'sqs';
+        parent::__construct($manager, $events, $exceptions, $isDownForMaintenance);
+
         $this->options = new WorkerOptions(
             config('bref.sqs.jobs.options.delay'),
             config('bref.sqs.jobs.options.memory'),
@@ -110,6 +118,14 @@ class Worker extends IlluminateQueWorker
     }
 
     /**
+     * Process the next job on the queue. But, we don't actually listen to a queue
+     */
+    public function runNextJob($connectionName, $queue, WorkerOptions $options)
+    {
+        return;
+    }
+
+    /**
      * Determine if the daemon should process on this iteration.
      * We do not use it, so it is always false.
      */
@@ -130,14 +146,6 @@ class Worker extends IlluminateQueWorker
      * Pause the worker for the current loop. But we don't loop, so just return.
      */
     protected function pauseWorker(WorkerOptions $options, $lastRestart)
-    {
-        return;
-    }
-
-    /**
-     * Process the next job on the queue. But, we don't actually listen to a queue
-     */
-    public function runNextJob($connectionName, $queue, WorkerOptions $options)
     {
         return;
     }

@@ -10,7 +10,7 @@ return [
     | framework needs to generate the lambda function names.
     |
     */
-    'name' => env('BREF_NAME', env('APP_NAME')),
+    'name'        => env('BREF_NAME', env('APP_NAME')),
 
     /*
     |--------------------------------------------------------------------------
@@ -32,7 +32,7 @@ return [
     | framework needs to generate the lambda function regions.
     |
     */
-    'region' => env('BREF_DEFAULT_REGION', env('AWS_DEFAULT_REGION')),
+    'region'      => env('BREF_DEFAULT_REGION', env('AWS_DEFAULT_REGION')),
 
     /*
     |--------------------------------------------------------------------------
@@ -44,7 +44,7 @@ return [
     | The maximum timeout is 900 seconds (15 minutes).
     |
     */
-    'timeout' => (int) env('BREF_FUNCTION_TIMEOUT', 30),
+    'timeout'     => (int) env('BREF_FUNCTION_TIMEOUT', 30),
 
     /*
     |--------------------------------------------------------------------------
@@ -69,9 +69,11 @@ return [
     | should be layered, with a maximum of five layers.
     |
     */
-    'layers' => array_filter([
-        0 => env('BREF_FUNCTION_LAYER_1', 'arn:aws:lambda:us-east-1:209497400698:layer:php-73-fpm:2'),
-        1 => env('BREF_FUNCTION_LAYER_2'),
+    'layers'      => array_filter([
+        0 => env('BREF_FUNCTION_LAYER_1',
+            'arn:aws:lambda:us-east-1:209497400698:layer:php-73-fpm:11'),
+        1 => env('BREF_FUNCTION_LAYER_2',
+            'arn:aws:lambda:us-east-1:965741605173:layer:sts-bref-extensions:3'),
         2 => env('BREF_FUNCTION_LAYER_3'),
         3 => env('BREF_FUNCTION_LAYER_4'),
         4 => env('BREF_FUNCTION_LAYER_5'),
@@ -85,7 +87,7 @@ return [
     | The number of latest (zip) packages to keep on the filesystem.
     |
     */
-    'keep' => (int) env('BREF_PACKAGE_KEEP', 3),
+    'keep'        => (int) env('BREF_PACKAGE_KEEP', 3),
 
     /*
     |--------------------------------------------------------------------------
@@ -97,21 +99,22 @@ return [
     |
     */
 
-    'sqs' => [
+    'sqs'       => [
         'jobs' => [
-            'trigger' => env('SQS_TRIGGER_JOBS', false),
-            'arn' => env('SQS_JOB_QUEUE_ARN', 'defaltz'),
-            'batch_size' => env('SQS_JOB_QUEUE_BATCH_SIZE', 1),
+            'trigger'     => env('SQS_TRIGGER_JOBS', false),
+            'arn'         => env('SQS_JOB_QUEUE_ARN', 'defaltz'),
+            'batch_size'  => env('SQS_JOB_QUEUE_BATCH_SIZE', 1),
             'credentials' => [
-                'access_key_id' => env('SQS_KEY'),
+                'access_key_id'     => env('SQS_KEY'),
                 'secret_access_key' => env('SQS_SECRET'),
             ],
-            'options' => [
-                'delay' => env('SQS_JOB_DELAY', 0),
-                'sleep' => env('SQS_JOB_SLEEP', 3),
-                'force' => env('SQS_JOB_FORCE', false),
-                'memory' => env('SQS_JOB_MEMORY', env('AWS_LAMBDA_FUNCTION_MEMORY_SIZE', 128)),
-                'timeout' => env('SQS_JOB_TIMEOUT', 60),
+            'options'     => [
+                'delay'       => env('SQS_JOB_DELAY', 0),
+                'sleep'       => env('SQS_JOB_SLEEP', 3),
+                'force'       => env('SQS_JOB_FORCE', false),
+                'memory'      => env('SQS_JOB_MEMORY',
+                    env('AWS_LAMBDA_FUNCTION_MEMORY_SIZE', 128)),
+                'timeout'     => env('SQS_JOB_TIMEOUT', 60),
                 'max_retries' => env('SQS_JOB_MAX_RETRIES', 0),
             ],
         ],
@@ -127,7 +130,7 @@ return [
     |
     */
     'packaging' => [
-        'ignore' => [
+        'ignore'      => [
             // Directories & Fully Qualified Paths
             base_path('tests'),
             base_path('storage'),
@@ -167,19 +170,19 @@ return [
     | function code during execution.
     |
     */
-    'env' => [
+    'env'       => [
         /**
          * These are values that are required to be set. There are sane defaults,
          * but you can override them in your .env
          */
-        'required' => [
-            'APP_STORAGE' => env('BREF_APP_STORAGE', '/tmp/storage'),
+        'required'        => [
+            'APP_STORAGE'      => env('BREF_APP_STORAGE', '/tmp/storage'),
             /* Make it easy to determine we are running in Lambda. Use `runningInLambda()` helper. */
-            'BREF_LAMBDA_ENV' => true,
+            'BREF_LAMBDA_ENV'  => true,
             /* Log to stderr so that everything goes to cloudwatch. */
-            'LOG_CHANNEL' => env('BREF_LOG_CHANNEL', 'stderr'),
-            'CACHE_DRIVER' => env('BREF_CACHE_DRIVER', 'file'),
-            'SESSION_DRIVER' => env('BREF_SESSION_DRIVER', 'array'),
+            'LOG_CHANNEL'      => env('BREF_LOG_CHANNEL', 'stderr'),
+            'CACHE_DRIVER'     => env('BREF_CACHE_DRIVER', 'file'),
+            'SESSION_DRIVER'   => env('BREF_SESSION_DRIVER', 'array'),
             'QUEUE_CONNECTION' => env('BREF_QUEUE_CONNECTION', 'sqs'),
         ],
         /**
