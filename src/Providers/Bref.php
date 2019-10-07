@@ -81,7 +81,6 @@ class Bref extends ServiceProvider
     {
         // if we are running in lambda, lets shuffle some things around.
         if (runningInLambda()) {
-            $this->setupStorage();
             $this->setupSessionDriver();
         }
         $this->handlePublishing();
@@ -94,31 +93,7 @@ class Bref extends ServiceProvider
      * Since the lambda filesystem is readonly except for
      * `/tmp` we need to customize the storage area.
      */
-    public function setupStorage(): void
-    {
-        $storagePath = '/tmp/storage';
 
-        $storagePaths = [
-            '/app/public',
-            '/framework/cache/data',
-            '/framework/sessions',
-            '/framework/testing',
-            '/framework/views',
-            '/logs',
-        ];
-
-        // Only make the dirs if we have not previously made them
-        if (! is_dir($storagePath.end($storagePaths))) {
-            reset($storagePaths);
-            foreach ($storagePaths as $path) {
-                mkdir($storagePath.$path, 0777, true);
-            }
-        }
-
-        $this->app->useStoragePath($storagePath);
-        $this->app['config']['view.compiled']
-            = realpath(storage_path('framework/views'));
-    }
 
     /**
      * Lambda cannot persist sessions to disk.
