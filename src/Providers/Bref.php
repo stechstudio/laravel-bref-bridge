@@ -4,20 +4,23 @@ namespace STS\Bref\Bridge\Providers;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
-use STS\Bref\Bridge\Console\ConfigSam;
-use STS\Bref\Bridge\Console\Deploy;
-use STS\Bref\Bridge\Console\Package;
-use STS\Bref\Bridge\Console\StartApi;
-use STS\Bref\Bridge\Console\Update;
+use STS\Bref\Bridge\Console\SAM\ConfigSam;
+use STS\Bref\Bridge\Console\SAM\Deploy;
+use STS\Bref\Bridge\Console\SAM\Package;
+use STS\Bref\Bridge\Console\SAM\StartApi;
+use STS\Bref\Bridge\Console\SAM\Update;
 use STS\Bref\Bridge\Events\SamConfigurationRequested;
 use STS\Bref\Bridge\Events\SamDeploymentRequested;
 use STS\Bref\Bridge\Events\SamPackageRequested;
 use STS\Bref\Bridge\Events\SamUpdateRequested;
-use STS\Bref\Bridge\Lambda\Contracts\Registrar;
 use STS\Bref\Bridge\Lambda\Router;
 use STS\Bref\Bridge\Services\ConfigureSam;
 use STS\Bref\Bridge\Services\DeployFunction;
 use STS\Bref\Bridge\Services\PackageFunction;
+use STS\Bref\Bridge\Services\SAM\Configuration as SamConfiguration;
+use STS\Bref\Bridge\Services\SAM\Deployment as SamDeployment;
+use STS\Bref\Bridge\Services\SAM\Package as SamPackage;
+use STS\Bref\Bridge\Services\SAM\Update as SamUpdate;
 use STS\Bref\Bridge\Services\UpdateFunction;
 use STS\LBB\Facades\LambdaRoute;
 use function base_path;
@@ -32,10 +35,10 @@ class Bref extends ServiceProvider
     protected $listen
         = [
 
-            SamConfigurationRequested::class => [ConfigureSam::class],
-            SamPackageRequested::class       => [PackageFunction::class],
-            SamDeploymentRequested::class    => [DeployFunction::class],
-            SamUpdateRequested::class        => [UpdateFunction::class],
+            SamConfigurationRequested::class => [SamConfiguration::class],
+            SamPackageRequested::class       => [SamPackage::class],
+            SamDeploymentRequested::class    => [SamDeployment::class],
+            SamUpdateRequested::class        => [SamUpdate::class],
         ];
 
     /**

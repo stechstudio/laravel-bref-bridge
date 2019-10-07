@@ -21,17 +21,18 @@ use function strpos;
 class Archive
 {
     /** @var array */
-    protected static $files = [
-        'vendor/autoload.php',
-        'vendor/composer/autoload_classmap.php',
-        'vendor/composer/autoload_files.php',
-        'vendor/composer/autoload_namespaces.php',
-        'vendor/composer/autoload_psr4.php',
-        'vendor/composer/autoload_real.php',
-        'vendor/composer/autoload_static.php',
-        'vendor/composer/ClassLoader.php',
-        'vendor/composer/installed.json',
-    ];
+    protected static $files
+        = [
+            'vendor/autoload.php',
+            'vendor/composer/autoload_classmap.php',
+            'vendor/composer/autoload_files.php',
+            'vendor/composer/autoload_namespaces.php',
+            'vendor/composer/autoload_psr4.php',
+            'vendor/composer/autoload_real.php',
+            'vendor/composer/autoload_static.php',
+            'vendor/composer/ClassLoader.php',
+            'vendor/composer/installed.json',
+        ];
     /** @var  ZipArchive */
     protected $zipArchive;
     /** @var string */
@@ -40,7 +41,7 @@ class Archive
     public function __construct(string $path)
     {
         $this->zipArchive = new ZipArchive;
-        $this->path = $path;
+        $this->path       = $path;
         $this->init();
     }
 
@@ -49,7 +50,8 @@ class Archive
      */
     public function init(): void
     {
-        $res = $this->zipArchive->open($this->path, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        $res = $this->zipArchive->open($this->path,
+            \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
         if ($res !== true) {
             throw new Package($this->message($res), $res);
         }
@@ -110,7 +112,7 @@ class Archive
             case 23:
                 return 'Entry has been deleted';
             default:
-                return 'An unknown error has occurred(' . intval($code) . ')';
+                return 'An unknown error has occurred('.intval($code).')';
         }
     }
 
@@ -122,22 +124,26 @@ class Archive
      */
     public static function laravel()
     {
-        $package = self::make();
+        $package        = self::make();
         $vendorFileList = $package->collectComposerLibraries();
         $package->addCollection($vendorFileList);
-        $package->addFile(__DIR__ . '/../../bin/bootstrap-bubba.php', 'bootstrap');
+        $package->addFile(__DIR__.'/../../bin/bootstrap-bubba.php',
+            'bootstrap');
         $package->setPermissions(
             'bootstrap',
-            FilePermissionCalculator::fromStringRepresentation('-r-xr-xr-x')->getDecimal()
+            FilePermissionCalculator::fromStringRepresentation('-r-xr-xr-x')
+                ->getDecimal()
         );
         $phpConfig = storage_path('php/conf.d');
         if (File::isDirectory($phpConfig)) {
             $files = new Collection(File::allFiles($phpConfig));
             $files->each(function (SplFileInfo $file) use (&$package): void {
-                $package->addFile($file->getRealPath(), sprintf('php/conf.d/%s', $file->getBasename()));
+                $package->addFile($file->getRealPath(),
+                    sprintf('php/conf.d/%s', $file->getBasename()));
             });
         }
         $package->close();
+
         return $package->getPath();
     }
 
@@ -146,6 +152,7 @@ class Archive
         if (empty($filePath)) {
             $filePath = self::generateArchiveName();
         }
+
         return new static($filePath);
     }
 
@@ -172,11 +179,12 @@ class Archive
     {
         $tmpDir = \tempDir('serverlessVendor', true)->getPathname();
         copyFolder(base_path(), $tmpDir);
-        rmFolder($tmpDir . '/vendor');
+        rmFolder($tmpDir.'/vendor');
         $this->collectComposerFiles($tmpDir, 'composer.json');
         $this->collectComposerFiles($tmpDir, 'composer.lock');
-        copyFolder(base_path('database/seeds'), $tmpDir . '/database/seeds');
-        copyFolder(base_path('database/factories'), $tmpDir . '/database/factories');
+        copyFolder(base_path('database/seeds'), $tmpDir.'/database/seeds');
+        copyFolder(base_path('database/factories'),
+            $tmpDir.'/database/factories');
         $process = new Process(['composer', 'install', '--no-dev']);
         $process->setWorkingDirectory($tmpDir);
         $process->run();
@@ -184,13 +192,15 @@ class Archive
         $process->setWorkingDirectory($tmpDir);
         $process->run();
 
-        rmFolder($tmpDir . '/database');
+        rmFolder($tmpDir.'/database');
 
         return $this->getFileCollection($tmpDir);
     }
 
-    protected function collectComposerFiles(string $tmpDir, string $source): void
-    {
+    protected function collectComposerFiles(
+        string $tmpDir,
+        string $source
+    ): void {
         copy(base_path($source), sprintf('%s/%s', $tmpDir, $source));
     }
 
@@ -200,9 +210,11 @@ class Archive
     public function getFileCollection(string $basePath): Collection
     {
         $fileList = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($basePath, \FilesystemIterator::SKIP_DOTS),
+            new \RecursiveDirectoryIterator($basePath,
+                \FilesystemIterator::SKIP_DOTS),
             \RecursiveIteratorIterator::CHILD_FIRST
         );
+
         return collect(iterator_to_array($fileList))->reject(
             function (\SplFileInfo $fileInfo, string $path) use ($basePath) {
                 return $this->ignore($fileInfo, $path, $basePath);
@@ -217,8 +229,11 @@ class Archive
     /**
      * Determines whether to ignore the file or path
      */
-    protected function ignore(\SplFileInfo $fileInfo, string $path, string $basePath): bool
-    {
+    protected function ignore(
+        \SplFileInfo $fileInfo,
+        string $path,
+        string $basePath
+    ): bool {
         foreach (config('bref.packaging.ignore') as $pattern) {
             if (strpos($pattern, base_path()) !== false) {
                 $pattern = str_replace(base_path(), $basePath, $pattern);
@@ -228,6 +243,7 @@ class Archive
                 return true;
             }
         }
+
         return false;
     }
 
@@ -236,15 +252,19 @@ class Archive
      *
      * @return array
      */
-    protected function transform(\SplFileInfo $fileInfo, string $path, string $basePath): array
-    {
+    protected function transform(
+        \SplFileInfo $fileInfo,
+        string $path,
+        string $basePath
+    ): array {
         $key = ltrim(substr($path, strlen($basePath)), '/');
+
         /** The $key will be path inside the archive from the archive root. */
         return [
             $key =>
                 collect([
-                    'path' => $fileInfo->getRealPath(),
-                    'isDir' => $fileInfo->isDir(),
+                    'path'        => $fileInfo->getRealPath(),
+                    'isDir'       => $fileInfo->isDir(),
                     'permissions' => $this->getPermissions($fileInfo, $key),
                 ]),
         ];
@@ -252,15 +272,22 @@ class Archive
 
     protected function getPermissions(\SplFileInfo $fileInfo, string $key): int
     {
-        $perms = $fileInfo->isDir() ?
+        $perms = $fileInfo->isDir()
+            ?
             /** Directories get read/execute */
-            FilePermissionCalculator::fromStringRepresentation('-r-xr-xr-x')->getDecimal() :
+            FilePermissionCalculator::fromStringRepresentation('-r-xr-xr-x')
+                ->getDecimal()
+            :
             /** Every file defaults to read only (you can't write to the lambda package dir structure) */
-            FilePermissionCalculator::fromStringRepresentation('-r--r--r--')->getDecimal();
+            FilePermissionCalculator::fromStringRepresentation('-r--r--r--')
+                ->getDecimal();
         /** If it is a configured Executable though, let us make it 555 as well.  */
         if (in_array($key, config('bref.packaging.executables'))) {
-            $perms = FilePermissionCalculator::fromStringRepresentation('-r-xr-xr-x')->getDecimal();
+            $perms
+                = FilePermissionCalculator::fromStringRepresentation('-r-xr-xr-x')
+                ->getDecimal();
         }
+
         return $perms;
     }
 
@@ -268,7 +295,7 @@ class Archive
     {
         $collection->each(
             function ($data, $entryName): void {
-                $entryName = 'laravel/' . $entryName;
+                $entryName = 'laravel/'.$entryName;
 
                 if ($data->get('isDir', false)) {
                     $this->addEmptyDir($entryName);
@@ -279,6 +306,7 @@ class Archive
             }
         );
         $this->reset();
+
         return $this;
     }
 
@@ -293,6 +321,7 @@ class Archive
         if ($res !== true) {
             throw new Package($this->zipArchive->getStatusString(), 66);
         }
+
         return $this;
     }
 
@@ -307,13 +336,16 @@ class Archive
         if ($res !== true) {
             throw new Package($this->zipArchive->getStatusString(), 66);
         }
+
         return $this;
     }
 
     public function setPermissions(string $entryName, int $permissions): Archive
     {
         $permissions = ($permissions & 0xffff) << 16;
-        $this->zipArchive->setExternalAttributesName($entryName, \ZipArchive::OPSYS_UNIX, $permissions);
+        $this->zipArchive->setExternalAttributesName($entryName,
+            \ZipArchive::OPSYS_UNIX, $permissions);
+
         return $this;
     }
 
@@ -324,6 +356,7 @@ class Archive
     {
         $this->close();
         $this->open();
+
         return $this;
     }
 
@@ -338,6 +371,7 @@ class Archive
         if ($res !== true) {
             throw new Package($this->zipArchive->getStatusString(), 66);
         }
+
         return $this;
     }
 
@@ -352,6 +386,7 @@ class Archive
         if ($res !== true) {
             throw new Package($this->message($res), $res);
         }
+
         return $this;
     }
 
