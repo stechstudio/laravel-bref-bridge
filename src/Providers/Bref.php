@@ -2,7 +2,6 @@
 
 namespace STS\Bref\Bridge\Providers;
 
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use STS\Bref\Bridge\Console\ConfigSam;
@@ -79,36 +78,10 @@ class Bref extends ServiceProvider
      */
     public function boot(): void
     {
-        // if we are running in lambda, lets shuffle some things around.
-        if (runningInLambda()) {
-            $this->setupSessionDriver();
-        }
         $this->handlePublishing();
 
         $this->registerEventListeners();
         LambdaRoute::registerFromFile(base_path('routes/lambda.php'));
-    }
-
-    /**
-     * Since the lambda filesystem is readonly except for
-     * `/tmp` we need to customize the storage area.
-     */
-
-
-    /**
-     * Lambda cannot persist sessions to disk.
-     */
-    public function setupSessionDriver(): void
-    {
-        // if you try to we will override
-        // you and save you from yourself.
-        if (env('SESSION_DRIVER') === 'file') {
-            // If you need sessions, store them
-            // in redis, a database, or cookies
-            // anything that scales horizontally
-            putenv('SESSION_DRIVER=array');
-            Config::set('session.driver', 'array');
-        }
     }
 
     /**
