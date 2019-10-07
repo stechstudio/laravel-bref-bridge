@@ -15,12 +15,12 @@ use STS\Bref\Bridge\Events\LambdaPackageRequested;
 use STS\Bref\Bridge\Events\SamConfigurationRequested;
 use STS\Bref\Bridge\Events\UpdateRequested;
 use STS\Bref\Bridge\Lambda\Contracts\Registrar;
-use STS\Bref\Bridge\Lambda\Facades\LambdaRoute;
 use STS\Bref\Bridge\Lambda\Router;
 use STS\Bref\Bridge\Services\ConfigureSam;
 use STS\Bref\Bridge\Services\DeployFunction;
 use STS\Bref\Bridge\Services\PackageFunction;
 use STS\Bref\Bridge\Services\UpdateFunction;
+use STS\LBB\Facades\LambdaRoute;
 use function base_path;
 
 class Bref extends ServiceProvider
@@ -30,47 +30,49 @@ class Bref extends ServiceProvider
      *
      * @var array
      */
-    protected $listen = [
+    protected $listen
+        = [
 
-        SamConfigurationRequested::class => [ConfigureSam::class],
-        LambdaPackageRequested::class => [PackageFunction::class],
-        DeploymentRequested::class => [DeployFunction::class],
-        UpdateRequested::class => [UpdateFunction::class],
-    ];
+            SamConfigurationRequested::class => [ConfigureSam::class],
+            LambdaPackageRequested::class    => [PackageFunction::class],
+            DeploymentRequested::class       => [DeployFunction::class],
+            UpdateRequested::class           => [UpdateFunction::class],
+        ];
 
     /**
      * Bref Console Commands to register.
      *
      * @var array
      */
-    protected $commandList = [
-        Package::class,
-        ConfigSam::class,
-        StartApi::class,
-        Deploy::class,
-        Update::class,
-    ];
+    protected $commandList
+        = [
+            Package::class,
+            ConfigSam::class,
+            StartApi::class,
+            Deploy::class,
+            Update::class,
+        ];
 
     /**
      * Default path to laravel configuration file in the package
      *
      * @var string
      */
-    protected $configPath = __DIR__ . '/../../config/bref.php';
+    protected $configPath = __DIR__.'/../../config/bref.php';
 
     /**
      * Default path to the SAM Template in the package
      *
      * @var string
      */
-    protected $samTemplatePath = __DIR__ . '/../../config/cloudformation.yaml';
+    protected $samTemplatePath = __DIR__.'/../../config/cloudformation.yaml';
 
     /**
      * Default path to publish the lambda routes file from.
      *
      * @var string
      */
-    protected $routesPath = __DIR__ . '/../../routes/lambda.php';
+    protected $routesPath = __DIR__.'/../../routes/lambda.php';
 
     /**
      * Bootstrap the application services.
@@ -85,7 +87,6 @@ class Bref extends ServiceProvider
         $this->handlePublishing();
 
         $this->registerEventListeners();
-
         LambdaRoute::registerFromFile(base_path('routes/lambda.php'));
     }
 
@@ -107,15 +108,16 @@ class Bref extends ServiceProvider
         ];
 
         // Only make the dirs if we have not previously made them
-        if (! is_dir($storagePath . end($storagePaths))) {
+        if (! is_dir($storagePath.end($storagePaths))) {
             reset($storagePaths);
             foreach ($storagePaths as $path) {
-                mkdir($storagePath . $path, 0777, true);
+                mkdir($storagePath.$path, 0777, true);
             }
         }
 
         $this->app->useStoragePath($storagePath);
-        $this->app['config']['view.compiled'] = realpath(storage_path('framework/views'));
+        $this->app['config']['view.compiled']
+            = realpath(storage_path('framework/views'));
     }
 
     /**
@@ -141,9 +143,12 @@ class Bref extends ServiceProvider
     {
         $publishConfigPath = config_path('bref.php');
 
-        $this->publishes([$this->configPath => $publishConfigPath], 'bref-configuration');
-        $this->publishes([$this->routesPath => base_path('routes/lambda.example.php')], 'bref-routes');
-        $this->publishes([$this->samTemplatePath => base_path('template.yaml')], 'bref-sam-template');
+        $this->publishes([$this->configPath => $publishConfigPath],
+            'bref-configuration');
+        $this->publishes([$this->routesPath => base_path('routes/lambda.example.php')],
+            'bref-routes');
+        $this->publishes([$this->samTemplatePath => base_path('template.yaml')],
+            'bref-sam-template');
     }
 
     /**
