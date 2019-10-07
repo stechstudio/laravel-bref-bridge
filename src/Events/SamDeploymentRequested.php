@@ -2,6 +2,6 @@
 
 namespace STS\Bref\Bridge\Events;
 
-class DeploymentRequested
+class SamDeploymentRequested
 {
 }

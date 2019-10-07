@@ -10,7 +10,7 @@ namespace STS\Bref\Bridge\Console;
 
 use Aws\CloudFormation\CloudFormationClient;
 use Illuminate\Console\Command;
-use STS\Bref\Bridge\Events\DeploymentRequested;
+use STS\Bref\Bridge\Events\SamDeploymentRequested;
 use function is_array;
 
 class Deploy extends Command
@@ -30,11 +30,11 @@ class Deploy extends Command
 
     public function handle(): int
     {
-        event(new DeploymentRequested);
+        event(new SamDeploymentRequested);
 
         $client = new CloudFormationClient([
             'version' => 'latest',
-            'region' => config('bref.region'),
+            'region'  => config('bref.region'),
         ]);
         $result = $client->describeStacks([
             'StackName' => config('bref.name'),

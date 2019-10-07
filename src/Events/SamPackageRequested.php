@@ -4,7 +4,7 @@ namespace STS\Bref\Bridge\Events;
 
 use STS\Bref\Bridge\Console\Package;
 
-class LambdaPackageRequested
+class SamPackageRequested
 {
     /**
      * Holds a reference to the console command for I/O
@@ -24,9 +24,10 @@ class LambdaPackageRequested
     /**
      * Console command setter
      */
-    public function setConsole(Package $console): LambdaPackageRequested
+    public function setConsole(Package $console): SamPackageRequested
     {
         $this->console = $console;
+
         return $this;
     }
 

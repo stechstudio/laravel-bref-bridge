@@ -9,10 +9,10 @@ use STS\Bref\Bridge\Console\Deploy;
 use STS\Bref\Bridge\Console\Package;
 use STS\Bref\Bridge\Console\StartApi;
 use STS\Bref\Bridge\Console\Update;
-use STS\Bref\Bridge\Events\DeploymentRequested;
-use STS\Bref\Bridge\Events\LambdaPackageRequested;
 use STS\Bref\Bridge\Events\SamConfigurationRequested;
-use STS\Bref\Bridge\Events\UpdateRequested;
+use STS\Bref\Bridge\Events\SamDeploymentRequested;
+use STS\Bref\Bridge\Events\SamPackageRequested;
+use STS\Bref\Bridge\Events\SamUpdateRequested;
 use STS\Bref\Bridge\Lambda\Contracts\Registrar;
 use STS\Bref\Bridge\Lambda\Router;
 use STS\Bref\Bridge\Services\ConfigureSam;
@@ -33,9 +33,9 @@ class Bref extends ServiceProvider
         = [
 
             SamConfigurationRequested::class => [ConfigureSam::class],
-            LambdaPackageRequested::class    => [PackageFunction::class],
-            DeploymentRequested::class       => [DeployFunction::class],
-            UpdateRequested::class           => [UpdateFunction::class],
+            SamPackageRequested::class       => [PackageFunction::class],
+            SamDeploymentRequested::class    => [DeployFunction::class],
+            SamUpdateRequested::class        => [UpdateFunction::class],
         ];
 
     /**

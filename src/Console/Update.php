@@ -9,7 +9,7 @@
 namespace STS\Bref\Bridge\Console;
 
 use Illuminate\Console\Command;
-use STS\Bref\Bridge\Events\UpdateRequested;
+use STS\Bref\Bridge\Events\SamUpdateRequested;
 
 class Update extends Command
 {
@@ -28,7 +28,8 @@ class Update extends Command
 
     public function handle(): int
     {
-        event(new UpdateRequested);
+        event(new SamUpdateRequested);
+
         return 0;
     }
 }
