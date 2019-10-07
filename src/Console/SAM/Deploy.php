@@ -6,7 +6,7 @@
  * Time: 16:27
  */
 
-namespace STS\Bref\Bridge\Console;
+namespace STS\Bref\Bridge\Console\SAM;
 
 use Aws\CloudFormation\CloudFormationClient;
 use Illuminate\Console\Command;

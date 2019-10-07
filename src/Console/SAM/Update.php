@@ -6,7 +6,7 @@
  * Time: 16:24
  */
 
-namespace STS\Bref\Bridge\Console;
+namespace STS\Bref\Bridge\Console\SAM;
 
 use Illuminate\Console\Command;
 use STS\Bref\Bridge\Events\SamUpdateRequested;
