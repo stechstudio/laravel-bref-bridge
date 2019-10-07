@@ -67,13 +67,6 @@ class Bref extends ServiceProvider
     protected $samTemplatePath = __DIR__.'/../../config/cloudformation.yaml';
 
     /**
-     * Default path to publish the lambda routes file from.
-     *
-     * @var string
-     */
-    protected $routesPath = __DIR__.'/../../routes/lambda.php';
-
-    /**
      * Bootstrap the application services.
      */
     public function boot(): void
@@ -93,8 +86,6 @@ class Bref extends ServiceProvider
 
         $this->publishes([$this->configPath => $publishConfigPath],
             'bref-configuration');
-        $this->publishes([$this->routesPath => base_path('routes/lambda.example.php')],
-            'bref-routes');
         $this->publishes([$this->samTemplatePath => base_path('template.yaml')],
             'bref-sam-template');
     }
@@ -122,27 +113,10 @@ class Bref extends ServiceProvider
     }
 
     /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides(): array
-    {
-        return ['LambdaRouter', Registrar::class];
-    }
-
-    /**
      * Register the application services.
      */
     public function register(): void
     {
-        $this->app->singleton(
-            Registrar::class,
-            Router::class
-        );
-
-        $this->app->alias(Registrar::class, 'bref.lambda.router');
-
         $this->commands($this->commandList);
     }
 }
