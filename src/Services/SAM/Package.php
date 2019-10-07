@@ -3,7 +3,7 @@
 namespace STS\Bref\Bridge\Services\SAM;
 
 use Illuminate\Support\Facades\File;
-use STS\Bref\Bridge\Events\LambdaPackageRequested;
+use STS\Bref\Bridge\Events\SamPackageRequested;
 use STS\Bref\Bridge\Package\Archive;
 use Symfony\Component\Process\Process;
 use function array_slice;
@@ -14,7 +14,7 @@ use function storage_path;
 
 class Package
 {
-    public function handle(LambdaPackageRequested $event): void
+    public function handle(SamPackageRequested $event): void
     {
         if (env('BREF_S3_BUCKET', false) === false) {
             exit('You must provide the S3 bucket to upload the package to in the BREF_S3_BUCKET environment variable.');
