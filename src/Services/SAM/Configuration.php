@@ -9,6 +9,7 @@ use Symfony\Component\Yaml\Yaml;
 use function base_path;
 use function config;
 use function count;
+use function env;
 use function is_array;
 
 class Configuration
@@ -61,7 +62,8 @@ class Configuration
     protected function setFunctionMemorySize(): void
     {
         if (config('bref.memory_size') % 64 !== 0
-            || config('bref.memory_size') < 128) {
+            || config('bref.memory_size') < 128
+        ) {
             throw new InvalidArgumentException('The bref memory size must be between 128 MB to 3,008 MB, in 64 MB increments..');
         }
         $this->config['Resources']['LaravelFunction']['Properties']['MemorySize']
@@ -72,7 +74,8 @@ class Configuration
     {
         if (! is_array(config('bref.layers'))
             || count(config('bref.layers')) === 0
-            || count(config('bref.layers')) > 5) {
+            || count(config('bref.layers')) > 5
+        ) {
             throw new InvalidArgumentException('You must provide at least one layer and no more than five layers.');
         }
         $this->config['Resources']['LaravelFunction']['Properties']['Layers']
@@ -111,11 +114,11 @@ class Configuration
             if (in_array_icase($variableName, $ignoredList)) {
                 continue;
             }
-            $this->config['Resources']['LaravelFunction']['Properties']['Environment']['Variables'][$variableName]
-                = env(
-                $variableName,
-                ''
-            );
+            if (env($variableName) !== null && env($variableName) !== 'null') {
+                $this->config['Resources']['LaravelFunction']['Properties']['Environment']['Variables'][$variableName]
+                    = env($variableName, ''
+                );
+            }
         }
     }
 }
