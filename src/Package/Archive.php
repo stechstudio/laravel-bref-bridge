@@ -127,7 +127,7 @@ class Archive
         $package        = self::make();
         $vendorFileList = $package->collectComposerLibraries();
         $package->addCollection($vendorFileList);
-        $package->addFile(__DIR__.'/../../bin/bootstrap-bubba.php',
+        $package->addFile(__DIR__.'/../../vendor/bin/bootstrap',
             'bootstrap');
         $package->setPermissions(
             'bootstrap',
