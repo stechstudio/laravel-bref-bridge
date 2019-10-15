@@ -2,6 +2,7 @@
 
 namespace STS\Bref\Bridge\Providers;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use STS\Bref\Bridge\Console\SAM\ConfigSam;
@@ -23,7 +24,10 @@ use STS\Bref\Bridge\Services\SAM\Package as SamPackage;
 use STS\Bref\Bridge\Services\SAM\Update as SamUpdate;
 use STS\Bref\Bridge\Services\UpdateFunction;
 use STS\LBB\Facades\LambdaRoute;
+use function array_merge;
 use function base_path;
+use function is_array;
+use function is_numeric;
 
 class Bref extends ServiceProvider
 {
@@ -75,7 +79,7 @@ class Bref extends ServiceProvider
      * @var string
      */
     protected $routesPath = __DIR__.'/../../routes/lambda.php';
-    
+
     /**
      * Bootstrap the application services.
      */
@@ -128,5 +132,50 @@ class Bref extends ServiceProvider
     public function register(): void
     {
         $this->commands($this->commandList);
+        $this->mergeConfigFrom(
+            $this->configPath, 'bref'
+        );
+    }
+
+    /**
+     * Merge the given configuration with the existing configuration.
+     *
+     * @param  string  $path
+     * @param  string  $key
+     *
+     * @return void
+     */
+    protected function mergeConfigFrom($path, $key)
+    {
+        $config = $this->app['config']->get($key, []);
+        $this->app['config']->set($key,
+            $this->mergeConfig(require $path, $config));
+    }
+
+    /**
+     * Merges the configs together and takes multi-dimensional arrays into account.
+     *
+     * @param  array  $original
+     * @param  array  $merging
+     *
+     * @return array
+     */
+    protected function mergeConfig(array $original, array $merging)
+    {
+        $array = array_merge($original, $merging);
+        foreach ($original as $key => $value) {
+            if (! is_array($value)) {
+                continue;
+            }
+            if (! Arr::exists($merging, $key)) {
+                continue;
+            }
+            if (is_numeric($key)) {
+                continue;
+            }
+            $array[$key] = $this->mergeConfig($value, $merging[$key]);
+        }
+
+        return $array;
     }
 }
