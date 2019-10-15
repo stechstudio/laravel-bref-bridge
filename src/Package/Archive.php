@@ -188,7 +188,7 @@ class Archive
             $tmpDir.'/database/factories');
         $cmdKey = config('composer.default');
         $cmd    = config('composer.'.$cmdKey);
-        fwrite(STDERR, 'Composer Command: '.$cmd);
+        dd($cmd);
         $process = new Process($cmd);
         $process->setWorkingDirectory($tmpDir);
         $process->run();
