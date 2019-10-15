@@ -70,6 +70,13 @@ class Bref extends ServiceProvider
     protected $samTemplatePath = __DIR__.'/../../config/cloudformation.yaml';
 
     /**
+     * Default path to publish the lambda routes file from.
+     *
+     * @var string
+     */
+    protected $routesPath = __DIR__.'/../../routes/lambda.php';
+    
+    /**
      * Bootstrap the application services.
      */
     public function boot(): void
