@@ -14,6 +14,7 @@ use function base_path;
 use function config;
 use function copy;
 use function copyFolder;
+use function implode;
 use function rmFolder;
 use function storage_path;
 use function str_replace;
@@ -186,8 +187,9 @@ class Archive
         copyFolder(base_path('database/seeds'), $tmpDir.'/database/seeds');
         copyFolder(base_path('database/factories'),
             $tmpDir.'/database/factories');
-        $cmdKey  = config('composer.default');
-        $cmd     = config('composer.'.$cmdKey);
+        $cmdKey = config('composer.default');
+        $cmd    = config('composer.'.$cmdKey);
+        fwrite(STDERR, 'Composer Command: '.implode(' ', $cmd));
         $process = new Process($cmd);
         $process->setWorkingDirectory($tmpDir);
         $process->run();
