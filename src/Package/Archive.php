@@ -186,8 +186,8 @@ class Archive
         copyFolder(base_path('database/seeds'), $tmpDir.'/database/seeds');
         copyFolder(base_path('database/factories'),
             $tmpDir.'/database/factories');
-        $cmdKey = config('composer.default');
-        $cmd    = config('composer.'.$cmdKey);
+        $cmdKey = config('bref.composer.default');
+        $cmd    = config('bref.composer.'.$cmdKey);
         dd($cmd);
         $process = new Process($cmd);
         $process->setWorkingDirectory($tmpDir);
