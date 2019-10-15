@@ -11,6 +11,7 @@ use STS\Bref\Bridge\Exceptions\Package;
 use Symfony\Component\Process\Process;
 use ZipArchive;
 use function base_path;
+use function config;
 use function copy;
 use function copyFolder;
 use function rmFolder;
@@ -185,7 +186,9 @@ class Archive
         copyFolder(base_path('database/seeds'), $tmpDir.'/database/seeds');
         copyFolder(base_path('database/factories'),
             $tmpDir.'/database/factories');
-        $process = new Process(['composer', 'install', '--no-dev']);
+        $cmdKey  = config('composer.default');
+        $cmd     = config('composer.'.$cmdKey);
+        $process = new Process($cmd);
         $process->setWorkingDirectory($tmpDir);
         $process->run();
         $process = new Process(['composer', 'dump-autoload']);

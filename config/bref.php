@@ -267,4 +267,9 @@ return [
             'AWS_LAMBDA_RUNTIME_API',
         ],
     ],
+    'composer'  => [
+        'default' => env('BREF_COMPOSER_INSTALL', 'no_dev'),
+        'no_dev'  => ['composer', 'install', '--no-dev'],
+        'dev'     => ['composer', 'install']
+    ]
 ];

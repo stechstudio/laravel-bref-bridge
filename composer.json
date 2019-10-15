@@ -12,7 +12,7 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "../lbb-core"
+      "url": "/Users/Bubba/Development/lbb-core"
     }
   ],
   "require": {
