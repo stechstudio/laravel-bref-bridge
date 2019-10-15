@@ -2,7 +2,7 @@
 
 namespace STS\Bref\Bridge\Events;
 
-use STS\Bref\Bridge\Console\Package;
+use STS\Bref\Bridge\Console\SAM\Package;
 
 class SamPackageRequested
 {
