@@ -14,7 +14,6 @@ use function base_path;
 use function config;
 use function copy;
 use function copyFolder;
-use function implode;
 use function rmFolder;
 use function storage_path;
 use function str_replace;
@@ -189,7 +188,7 @@ class Archive
             $tmpDir.'/database/factories');
         $cmdKey = config('composer.default');
         $cmd    = config('composer.'.$cmdKey);
-        fwrite(STDERR, 'Composer Command: '.implode(' ', $cmd));
+        fwrite(STDERR, 'Composer Command: '.$cmd);
         $process = new Process($cmd);
         $process->setWorkingDirectory($tmpDir);
         $process->run();
