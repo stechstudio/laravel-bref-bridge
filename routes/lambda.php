@@ -3,8 +3,7 @@
 use STS\AwsEvents\Contexts\Context;
 use STS\AwsEvents\Events\Event;
 use STS\AwsEvents\Events\Sqs;
-use STS\Bref\Bridge\Lambda\Facades\LambdaRoute;
-use STS\Bref\Bridge\Lambda\Queue\Worker;
+use STS\LBB\Facades\LambdaRoute;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +14,6 @@ use STS\Bref\Bridge\Lambda\Queue\Worker;
 | routes are loaded by the bref service provider. Now create something great!
 |
 */
-
 // EXAMPLE: Basic Event, just echoes the event back
 LambdaRoute::register(
     Event::class,

@@ -6,7 +6,7 @@
  * Time: 14:17
  */
 
-namespace STS\Bref\Bridge\Console;
+namespace STS\Bref\Bridge\Console\SAM;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Process\Process;
@@ -35,6 +35,7 @@ class StartApi extends Command
         foreach ($process as $type => $data) {
             echo $data;
         }
+
         return 0;
     }
 }

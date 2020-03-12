@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace STS\Bref\Bridge\Services;
+namespace STS\Bref\Bridge\Services\SAM;
 
-use STS\Bref\Bridge\Events\UpdateRequested;
+use STS\Bref\Bridge\Events\SamUpdateRequested;
 use Symfony\Component\Process\Process;
 
-class UpdateFunction
+class Update
 {
-    public function handle(UpdateRequested $event): void
+    public function handle(SamUpdateRequested $event): void
     {
         $this->runUpdate(config('bref.name'));
     }

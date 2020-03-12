@@ -2,6 +2,6 @@
 
 namespace STS\Bref\Bridge\Events;
 
-class UpdateRequested
+class SamUpdateRequested
 {
 }

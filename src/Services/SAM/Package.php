@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace STS\Bref\Bridge\Services;
+namespace STS\Bref\Bridge\Services\SAM;
 
 use Illuminate\Support\Facades\File;
-use STS\Bref\Bridge\Events\LambdaPackageRequested;
+use STS\Bref\Bridge\Events\SamPackageRequested;
 use STS\Bref\Bridge\Package\Archive;
 use Symfony\Component\Process\Process;
 use function array_slice;
@@ -12,9 +12,9 @@ use function count;
 use function glob;
 use function storage_path;
 
-class PackageFunction
+class Package
 {
-    public function handle(LambdaPackageRequested $event): void
+    public function handle(SamPackageRequested $event): void
     {
         if (env('BREF_S3_BUCKET', false) === false) {
             exit('You must provide the S3 bucket to upload the package to in the BREF_S3_BUCKET environment variable.');
@@ -29,7 +29,7 @@ class PackageFunction
 
         $this->rotatePackages();
 
-        $event->info('Package at: ' . $packagePath);
+        $event->info('Package at: '.$packagePath);
         $event->info('Running the SAM Package command, generating template file.');
         $process = new Process([
             'sam',
@@ -51,8 +51,8 @@ class PackageFunction
     protected function rotatePackages(): void
     {
         $zipFiles = glob(storage_path('*.zip'));
-        $keep = config('bref.keep') + 1;
-        $count = count($zipFiles);
+        $keep     = config('bref.keep') + 1;
+        $count    = count($zipFiles);
         if ($count > $keep) {
             $length = $count - $keep;
             File::delete(array_slice($zipFiles, 0, $length));

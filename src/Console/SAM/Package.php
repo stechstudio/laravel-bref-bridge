@@ -6,10 +6,10 @@
  * Time: 16:27
  */
 
-namespace STS\Bref\Bridge\Console;
+namespace STS\Bref\Bridge\Console\SAM;
 
 use Illuminate\Console\Command;
-use STS\Bref\Bridge\Events\LambdaPackageRequested;
+use STS\Bref\Bridge\Events\SamPackageRequested;
 
 class Package extends Command
 {
@@ -28,7 +28,8 @@ class Package extends Command
 
     public function handle(): int
     {
-        event((new LambdaPackageRequested)->setConsole($this));
+        event((new SamPackageRequested)->setConsole($this));
+
         return 0;
     }
 }

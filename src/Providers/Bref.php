@@ -2,26 +2,32 @@
 
 namespace STS\Bref\Bridge\Providers;
 
-use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
-use STS\Bref\Bridge\Console\ConfigSam;
-use STS\Bref\Bridge\Console\Deploy;
-use STS\Bref\Bridge\Console\Package;
-use STS\Bref\Bridge\Console\StartApi;
-use STS\Bref\Bridge\Console\Update;
-use STS\Bref\Bridge\Events\DeploymentRequested;
-use STS\Bref\Bridge\Events\LambdaPackageRequested;
+use STS\Bref\Bridge\Console\SAM\ConfigSam;
+use STS\Bref\Bridge\Console\SAM\Deploy;
+use STS\Bref\Bridge\Console\SAM\Package;
+use STS\Bref\Bridge\Console\SAM\StartApi;
+use STS\Bref\Bridge\Console\SAM\Update;
 use STS\Bref\Bridge\Events\SamConfigurationRequested;
-use STS\Bref\Bridge\Events\UpdateRequested;
-use STS\Bref\Bridge\Lambda\Contracts\Registrar;
-use STS\Bref\Bridge\Lambda\Facades\LambdaRoute;
+use STS\Bref\Bridge\Events\SamDeploymentRequested;
+use STS\Bref\Bridge\Events\SamPackageRequested;
+use STS\Bref\Bridge\Events\SamUpdateRequested;
 use STS\Bref\Bridge\Lambda\Router;
 use STS\Bref\Bridge\Services\ConfigureSam;
 use STS\Bref\Bridge\Services\DeployFunction;
 use STS\Bref\Bridge\Services\PackageFunction;
+use STS\Bref\Bridge\Services\SAM\Configuration as SamConfiguration;
+use STS\Bref\Bridge\Services\SAM\Deployment as SamDeployment;
+use STS\Bref\Bridge\Services\SAM\Package as SamPackage;
+use STS\Bref\Bridge\Services\SAM\Update as SamUpdate;
 use STS\Bref\Bridge\Services\UpdateFunction;
+use STS\LBB\Facades\LambdaRoute;
+use function array_merge;
 use function base_path;
+use function is_array;
+use function is_numeric;
 
 class Bref extends ServiceProvider
 {
@@ -30,108 +36,59 @@ class Bref extends ServiceProvider
      *
      * @var array
      */
-    protected $listen = [
+    protected $listen
+        = [
 
-        SamConfigurationRequested::class => [ConfigureSam::class],
-        LambdaPackageRequested::class => [PackageFunction::class],
-        DeploymentRequested::class => [DeployFunction::class],
-        UpdateRequested::class => [UpdateFunction::class],
-    ];
+            SamConfigurationRequested::class => [SamConfiguration::class],
+            SamPackageRequested::class       => [SamPackage::class],
+            SamDeploymentRequested::class    => [SamDeployment::class],
+            SamUpdateRequested::class        => [SamUpdate::class],
+        ];
 
     /**
      * Bref Console Commands to register.
      *
      * @var array
      */
-    protected $commandList = [
-        Package::class,
-        ConfigSam::class,
-        StartApi::class,
-        Deploy::class,
-        Update::class,
-    ];
+    protected $commandList
+        = [
+            Package::class,
+            ConfigSam::class,
+            StartApi::class,
+            Deploy::class,
+            Update::class,
+        ];
 
     /**
      * Default path to laravel configuration file in the package
      *
      * @var string
      */
-    protected $configPath = __DIR__ . '/../../config/bref.php';
+    protected $configPath = __DIR__.'/../../config/bref.php';
 
     /**
      * Default path to the SAM Template in the package
      *
      * @var string
      */
-    protected $samTemplatePath = __DIR__ . '/../../config/cloudformation.yaml';
+    protected $samTemplatePath = __DIR__.'/../../config/cloudformation.yaml';
 
     /**
      * Default path to publish the lambda routes file from.
      *
      * @var string
      */
-    protected $routesPath = __DIR__ . '/../../routes/lambda.php';
+    protected $routesPath = __DIR__.'/../../routes/lambda.php';
 
     /**
      * Bootstrap the application services.
      */
     public function boot(): void
     {
-        // if we are running in lambda, lets shuffle some things around.
-        if (runningInLambda()) {
-            $this->setupStorage();
-            $this->setupSessionDriver();
-        }
         $this->handlePublishing();
 
         $this->registerEventListeners();
-
         LambdaRoute::registerFromFile(base_path('routes/lambda.php'));
-    }
-
-    /**
-     * Since the lambda filesystem is readonly except for
-     * `/tmp` we need to customize the storage area.
-     */
-    public function setupStorage(): void
-    {
-        $storagePath = '/tmp/storage';
-
-        $storagePaths = [
-            '/app/public',
-            '/framework/cache/data',
-            '/framework/sessions',
-            '/framework/testing',
-            '/framework/views',
-            '/logs',
-        ];
-
-        // Only make the dirs if we have not previously made them
-        if (! is_dir($storagePath . end($storagePaths))) {
-            reset($storagePaths);
-            foreach ($storagePaths as $path) {
-                mkdir($storagePath . $path, 0777, true);
-            }
-        }
-
-        $this->app->useStoragePath($storagePath);
-        $this->app['config']['view.compiled'] = realpath(storage_path('framework/views'));
-    }
-
-    /**
-     * Lambda cannot persist sessions to disk.
-     */
-    public function setupSessionDriver(): void
-    {
-        // if you try to we will override
-        // you and save you from yourself.
-        if (env('SESSION_DRIVER') === 'file') {
-            // If you need sessions, store them
-            // in redis, a database, or cookies
-            // anything that scales horizontally
-            putenv('SESSION_DRIVER=array');
-            Config::set('session.driver', 'array');
-        }
     }
 
     /**
@@ -141,9 +98,10 @@ class Bref extends ServiceProvider
     {
         $publishConfigPath = config_path('bref.php');
 
-        $this->publishes([$this->configPath => $publishConfigPath], 'bref-configuration');
-        $this->publishes([$this->routesPath => base_path('routes/lambda.example.php')], 'bref-routes');
-        $this->publishes([$this->samTemplatePath => base_path('template.yaml')], 'bref-sam-template');
+        $this->publishes([$this->configPath => $publishConfigPath],
+            'bref-configuration');
+        $this->publishes([$this->samTemplatePath => base_path('template.yaml')],
+            'bref-sam-template');
     }
 
     /**
@@ -169,27 +127,55 @@ class Bref extends ServiceProvider
     }
 
     /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides(): array
-    {
-        return ['LambdaRouter', Registrar::class];
-    }
-
-    /**
      * Register the application services.
      */
     public function register(): void
     {
-        $this->app->singleton(
-            Registrar::class,
-            Router::class
-        );
-
-        $this->app->alias(Registrar::class, 'bref.lambda.router');
-
         $this->commands($this->commandList);
+        $this->mergeConfigFrom(
+            $this->configPath, 'bref'
+        );
+    }
+
+    /**
+     * Merge the given configuration with the existing configuration.
+     *
+     * @param  string  $path
+     * @param  string  $key
+     *
+     * @return void
+     */
+    protected function mergeConfigFrom($path, $key)
+    {
+        $config = $this->app['config']->get($key, []);
+        $this->app['config']->set($key,
+            $this->mergeConfig(require $path, $config));
+    }
+
+    /**
+     * Merges the configs together and takes multi-dimensional arrays into account.
+     *
+     * @param  array  $original
+     * @param  array  $merging
+     *
+     * @return array
+     */
+    protected function mergeConfig(array $original, array $merging)
+    {
+        $array = array_merge($original, $merging);
+        foreach ($original as $key => $value) {
+            if (! is_array($value)) {
+                continue;
+            }
+            if (! Arr::exists($merging, $key)) {
+                continue;
+            }
+            if (is_numeric($key)) {
+                continue;
+            }
+            $array[$key] = $this->mergeConfig($value, $merging[$key]);
+        }
+
+        return $array;
     }
 }

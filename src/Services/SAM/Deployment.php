@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace STS\Bref\Bridge\Services;
+namespace STS\Bref\Bridge\Services\SAM;
 
 use Illuminate\Support\Facades\Log;
-use STS\Bref\Bridge\Events\DeploymentRequested;
+use STS\Bref\Bridge\Events\SamDeploymentRequested;
 use Symfony\Component\Process\Process;
 
-class DeployFunction
+class Deployment
 {
-    public function handle(DeploymentRequested $event): void
+    public function handle(SamDeploymentRequested $event): void
     {
         $process = new Process([
             'sam',
